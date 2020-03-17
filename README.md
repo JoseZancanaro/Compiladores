@@ -1,13 +1,12 @@
-﻿
-# Especificação de Linguagem
+﻿# Especificação de Linguagem
+**Linguagem**: Winter Programming Language  
+**Extensão**: .wpl  
+**Compilador**: Spring Compiler  
+**IDE**: Winter IDE (Wide)  
 
-**Linguagem**: Winter Programming Language
-**Extensão**: .wpl
-**Compilador**: Spring Compiler
-**IDE**: Winter IDE (Wide)
+```
 
-```
-/-
+/-
  - @authors
  - Israel Efraim de Oliveira
  - José Carlos Zancanaro
@@ -30,7 +29,8 @@ def main() -> Integer {
 
 	return 0;
 }
-```
+
+```
 
 ## Diretivas
 
@@ -38,13 +38,13 @@ def main() -> Integer {
 Deve iniciar com uma letra (independente de caixa) ou um underscore, os caracteres subsequentes podem ser letras, números ou underscores. Não é possível utilizar os demais caracteres especiais.
 
 ### Comentários
-Comentários de apenas uma linha (ou resto de linha) devem ser precedidos por dois hífens "--".
-*Ex:*
+Comentários de apenas uma linha (ou resto de linha) devem ser precedidos por dois hífens "--".  
+*Ex:*  
 -- isto é um comentário.
 
-Comentários de linhas múltiplas devem ser precedidos por "\-" e finalizar com "-/"
-*Ex:*
-/- Isto é
+Comentários de linhas múltiplas devem ser precedidos por "\-" e finalizar com "-/".  
+*Ex:*  
+/- Isto é  
  um comentário -/
 
 ### Operadores
@@ -87,9 +87,9 @@ Desvio lógico com case-of e choose-from.
 
 ```
 choose from
-    |> condition = ...;
-	|> condition = ...;
-	|> otherwise = ...;
+	|> condition -> ...;
+	|> condition -> ...;
+	|> otherwise -> ...;
 ```
 
 ```
