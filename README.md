@@ -86,17 +86,19 @@ Os identificadores de tipo iniciam sempre com uma letra maiúscula e são tidos 
 Desvio lógico com case-of e choose-from.
 
 ```
-choose from
+choose from {
 	|> condition -> ...;
 	|> condition -> ...;
 	|> otherwise -> ...;
+}
 ```
 
 ```
-case variavel of
+case variavel of {
     |> valor -> ...;
     |> valor -> ...;
     |> otherwise -> ...;
+ }
 ```
 
 ### Laços de repetição
