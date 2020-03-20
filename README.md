@@ -37,6 +37,22 @@ def main() -> Integer {
 ### Regras para nomes de variável
 Deve iniciar com uma letra (independente de caixa) ou um underscore, os caracteres subsequentes podem ser letras, números ou underscores. Não é possível utilizar os demais caracteres especiais.
 
+### Sub-rotinas (Funções e procedimentos)
+Deve-se iniciar com a keyword **def**, em seguida, o nome da função deve iniciar com uma letra (independente de caixa) ou um underscore, os caracteres subsequentes podem ser letras, números ou underscores, além de ser possível utilizar do caracter especial  **'** (aspas simples). Ademais caracteres especiais não podem ser utilizados. Adiante deve especificar os parâmetros da função (possuí argumentos ou não), e o tipo de retorno da função. O tipo de retorno é especificado após os caracteres **->**.
+
+```
+def main() -> Integer { ... }
+```
+```
+def MinhaFuncao(Integer num, Float[] val) -> Bool { ... }
+```
+### Entrada e saída de dados
+Para a entrada de dados, utiliza-se o procedimento **read()**, e para a saída de dados é necessário o uso da função **print()**
+```
+read(meuValor);
+print(meuValor);
+```
+
 ### Comentários
 Comentários de apenas uma linha (ou resto de linha) devem ser precedidos por dois hífens "--".  
 *Ex:*  
@@ -134,6 +150,13 @@ Como listado anteriormente, a associação (ou atribuição) é feita através d
 ```
 Integer x = 20;
 ```
+
+### Vetor
+Um vetor é identificado com a inserção dos caracteres **[]** após a definição de seu tipo.
+```
+Double[] vetor;
+```
+
 
 ### Delimitadores e pontuadores
 - As instruções são delimitadas por um caractere de ";" (ponto e vírgula).
