@@ -89,6 +89,22 @@ Comentários de linhas múltiplas devem ser precedidos por "\-" e finalizar com 
 | Bit a bit | ~ | Complemento |
 | Bit a bit | ^ | Ou exclusivo (Xor) |
 
+### Precedência de Operadores
+| Nível| Classe| Operadores|
+|--|--| -- |
+| 1 | Unário | + - ! ~ |
+| 2 | Aritmético | ** |
+| 3 | Aritmético | * / % |
+| 4 | Aritmético | + - |
+| 5 | Bit a bit | >> << |
+| 6 | Relacional | > < >= <= |
+| 7 | Relacional | == /= |
+| 8 | Bit a bit | & |
+| 9 | Bit a bit | ^ |
+| 10 | Bit a bit | \| |
+| 11 | Lógico | && |
+| 12 | Lógico | \|\| |
+
 ### Tipos
 Os identificadores de tipo iniciam sempre com uma letra maiúscula e são tidos como palavras reservadas.
 - Inteiro: Integer
