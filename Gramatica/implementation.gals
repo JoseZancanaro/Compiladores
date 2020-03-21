@@ -12,15 +12,17 @@ Input = Stream
 Parser = SLR
 #RegularDefinitions
 // SYMBOLS
-SYM_HEX    : [0-9a-fA-F]
-SYM_DEC    : [0-9]
-SYM_BIN    : [01]
-SYM_LETTER : [a-zA-Z]
-SYM_CHAR   : [^']
-SYM_STR    : [^\"]
-SYM_DASH   : \-
-SYM_SLASH  : /
-SYM_VEC_MT : \[\]
+SYM_HEX     : [0-9a-fA-F]
+SYM_DEC     : [0-9]
+SYM_BIN     : [01]
+SYM_LETTER  : [a-zA-Z]
+SYM_CHAR    : [^']
+SYM_STR     : [^\"]
+SYM_DASH    : \-
+SYM_SLASH   : /
+SYM_VEC_MT  : \[\]
+SYM_COMM_SL : {SYM_DASH}{SYM_DASH}[^\n]*
+SYM_COMM_ML : {SYM_SLASH}{SYM_DASH}((\-[^/])|[^\-])*{SYM_DASH}+{SYM_SLASH}
 
 // Identifiers
 ID_NAME : [a-zA-Z_][a-zA-Z_0-9]*
@@ -59,8 +61,13 @@ KW_WHILE     : "while"
 KW_DO        : "do"
 
 // 1.3 Function
+
+// 1.3.0 Function definition and return
 KW_DEF    : "def"
 KW_RETURN : "return"
+
+// 1.3.1 Function reserved name
+KW_FN_RESERVED : ((read)|(print))
 
 // 2 Operators
 
@@ -110,9 +117,7 @@ VAL_STR       : \"{SYM_STR}*\"
 VAL_BOOL_TRUE  = ID_VAR : "true"
 VAL_BOOL_FALSE = ID_VAR : "false"
 
-// 5 Comments
-COMM_SL : {SYM_DASH}{SYM_DASH}[^\n]*
-COMM_ML : {SYM_SLASH}{SYM_DASH}((\-[^/])|[^\-])*{SYM_DASH}+{SYM_SLASH}
+// 5 Comments are ignored
 
 // 6 Delimiters
 DEL_ARROW  : "->"
@@ -131,7 +136,7 @@ DEL_LCB : "{"
 DEL_RCB : "}"
 
 // Ignore chars
-: [\s\t\n\r]*
+: ({SYM_COMM_SL}|{SYM_COMM_ML}|[\s\t\n\r])*
 #NonTerminals
 // WPL
 // Context-free grammar states
@@ -141,10 +146,10 @@ DEL_RCB : "}"
 <definition_list>
 <definition>
 
-<scope>
-
 <instruction_list>
 <instruction>
+
+<scope>
 
 <statement>
 
@@ -166,6 +171,7 @@ DEL_RCB : "}"
 <vector_constructor_values>
 <vector_child>
 
+<assignment_list>
 <assignment>
 
 <loop>
@@ -227,11 +233,12 @@ DEL_RCB : "}"
 <definition_list> ::= <definition> <definition_list> | î ;
 <definition> ::= <declaration> DEL_SEMICOLON | <function> ;
 
-<scope> ::= DEL_LCB <instruction_list> DEL_RCB ;
-
 <instruction_list> ::= <instruction> <instruction_list> | î ;
 <instruction> ::= <scope> | <statement> ;
 
+<scope> ::= DEL_LCB <instruction_list> DEL_RCB ;
+
+// Conditional statement, loop statement, expression statement, declaration statement, assignment statement, function return statement
 <statement> ::=  <conditional> | <loop> | <expression> DEL_SEMICOLON | <initialization> DEL_SEMICOLON | <function_return> DEL_SEMICOLON;
 
 <initialization> ::= <declaration> | <assignment> ;
@@ -240,21 +247,24 @@ DEL_RCB : "}"
 <declaration_name_list> ::= <declaration_name> DEL_COMMA <declaration_name_list> | <declaration_name> ;
 <declaration_name> ::= ID_VAR OP_ATT <expression> | ID_VAR ;
 
+// Typename [vector modifier, ...] [const]
 <type_complete> ::= <type> <type_modifier> ;
 <type> ::= KW_VOID | KW_INT | KW_FLOAT | KW_DOUBLE | KW_BOOL | KW_CHAR | KW_STR | KW_ANY ;
 <type_modifier> ::=  <type_modifier_vector> <type_modifier_const> ;
 <type_modifier_vector> ::= KW_VECTOR <type_modifier_vector> | î ;
 <type_modifier_const> ::= KW_CONST | î ;
 
+// Contant values, vector constructor
 <literal> ::= VAL_INT | VAL_INT_BIN | VAL_INT_HEX | VAL_REAL | VAL_CHAR | VAL_STR | VAL_BOOL_TRUE | VAL_BOOL_FALSE | <vector_constructor> ;
 
 <vector_constructor> ::= DEL_LSB <vector_constructor_values> DEL_RSB | KW_VECTOR;
 <vector_constructor_values> ::= <expression> DEL_COMMA <vector_constructor_values> | <expression> ;
 <vector_child> ::= ID_VAR DEL_LSB <expression> DEL_RSB ;
 
+<assignment_list> ::= <assignment> DEL_COMMA <assignment_list> | <assignment> ;
 <assignment> ::= ID_VAR OP_ATT <expression> ;
 
-// Loops
+// Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
 
 <loop_while> ::= KW_WHILE DEL_LP <expression> DEL_RP <scope> ;
@@ -265,12 +275,12 @@ DEL_RCB : "}"
 <loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
 <loop_for_args_init> ::= <initialization> | î ;
 <loop_for_args_test> ::= <expression> | î ;
-<loop_for_args_op> ::= <assignment> | î ;
+<loop_for_args_op> ::= <assignment_list> | î ;
 
 <loop_range_for> ::= KW_FOR DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <scope> ;
 <loop_range_for_declaration> ::= <type_complete> ID_VAR | ID_VAR ;
 
-// Conditionals
+// Conditional Branches: choose-from, case-of
 <conditional> ::= <conditional_choose> | <conditional_case> ;
 
 <conditional_choose> ::= KW_CHOOSE DEL_LCB <conditional_choose_opt_list> DEL_RCB ;
@@ -283,14 +293,14 @@ DEL_RCB : "}"
 <conditional_case_opt> ::= KW_PIPE <literal> DEL_ARROW <instruction> ;
 <conditional_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <instruction> ;
 
-// Subroutines
+// Subroutines: function definition
 <function> ::= KW_DEF <function_name> DEL_LP <function_arg_list> DEL_RP DEL_ARROW <type_complete> <scope> ;
-<function_name> ::= ID_VAR | ID_FUNC;
+<function_name> ::= ID_VAR | ID_FUNC | KW_FN_RESERVED ;
 <function_arg_list> ::= <function_arg> DEL_COMMA <function_arg_list> | <function_arg> | î ;
 <function_arg> ::= <type_complete> ID_VAR ;
 <function_return> ::= KW_RETURN <expression> ;
 
-<function_call> ::= <function_name> DEL_LP <function_call_arg> DEL_RP | <function_name> DEL_LP DEL_RP ;
+<function_call> ::= <function_name> DEL_LP <function_call_arg_list> DEL_RP | <function_name> DEL_LP DEL_RP ;
 <function_call_arg_list> ::= <function_call_arg> DEL_COMMA <function_call_arg_list> | <function_call_arg> ;
 <function_call_arg> ::= <expression> ;
 

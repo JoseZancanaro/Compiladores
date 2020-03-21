@@ -4,7 +4,7 @@
 **Compilador**: Spring Compiler  
 **IDE**: Winter IDE (Wide)  
 
-```
+```python
 
 /-
  - @authors
@@ -17,15 +17,17 @@ def main() -> Integer {
 	Float altura = 1.75, peso = 72.1;
 	Float imc = peso / altura ** 2;
 	
-	String mensagem = choose from
-				|> imc <= magro = "Abaixo do peso.";
-				|> imc <= normal = "Está normal.";
-				|> imc <= gordinho = "Acima do peso.";
-				|> otherwise = "Alien!";
+	String mensagem;
+
+	choose from {
+		|> imc <= magro -> mensagem = "Abaixo do peso.";
+		|> imc <= normal -> mensagem = "Está normal.";
+		|> imc <= gordinho -> mensagem = "Acima do peso.";
+		|> otherwise -> mensagem = "Alien!";
+	}
 
 	print("IMC: ", imc);
 	print("Classificação: ", mensagem);
-	
 
 	return 0;
 }
