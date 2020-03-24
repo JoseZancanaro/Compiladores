@@ -60,8 +60,8 @@ target_wrapper.*
 
 # QtCreator
 *.autosave
-./IDE/WIDE-Debug/
-!./IDE/WIDE-Debug/.gitkeep
+IDE/WIDE-Debug/*
+!IDE/WIDE-Debug/.gitkeep
 
 
 # QtCreator Qml

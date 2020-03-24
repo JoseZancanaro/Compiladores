@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icon/snowflake.ico</file>
+        <file>icon/play.ico</file>
+    </qresource>
+</RCC>

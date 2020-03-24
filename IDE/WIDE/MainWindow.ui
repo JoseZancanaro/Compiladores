@@ -6,17 +6,298 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>984</width>
+    <height>740</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>[WIDE] Winter IDE</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
-  <widget class="QMenuBar" name="menubar"/>
-  <widget class="QStatusBar" name="statusbar"/>
+  <property name="windowIcon">
+   <iconset resource="resources/main.qrc">
+    <normaloff>:/icon/snowflake.ico</normaloff>:/icon/snowflake.ico</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="upperLayout">
+      <item>
+       <widget class="QTreeWidget" name="treeWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>230</width>
+          <height>557</height>
+         </size>
+        </property>
+        <property name="baseSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="rootIsDecorated">
+         <bool>false</bool>
+        </property>
+        <property name="headerHidden">
+         <bool>true</bool>
+        </property>
+        <column>
+         <property name="text">
+          <string>Name</string>
+         </property>
+        </column>
+        <item>
+         <property name="text">
+          <string>Root</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>custom.wpl</string>
+          </property>
+         </item>
+        </item>
+        <item>
+         <property name="text">
+          <string>main.wpl</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="textEdit">
+        <property name="html">
+         <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;/-&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;-&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;@&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;authors&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;-&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; Israel Efraim de Oliveira&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;-&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; José Carlos Zancanaro&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;-/&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;def&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#6f42c1;&quot;&gt;main&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;() -&amp;gt; Integer {&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;  Float magro = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;18.5&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;, normal = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;25.0&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;, gordinho = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;30.0&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;  Float altura = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;1.75&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;, peso = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;72.1&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;  Float imc = peso &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;/&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; altura &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;**&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;2&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;  String mensagem;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;  choose &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;from&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; {&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;    |&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; imc &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;&amp;lt;=&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; magro -&amp;gt; mensagem = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#032f62;&quot;&gt;&amp;quot;Abaixo do peso.&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;    |&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; imc &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;&amp;lt;=&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; normal -&amp;gt; mensagem = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#032f62;&quot;&gt;&amp;quot;Está normal.&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;    |&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; imc &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;&amp;lt;=&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; gordinho -&amp;gt; mensagem = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#032f62;&quot;&gt;&amp;quot;Acima do peso.&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;    |&amp;gt;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; otherwise -&amp;gt; mensagem = &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#032f62;&quot;&gt;&amp;quot;Alien!&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;  }&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;  print&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;(&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#032f62;&quot;&gt;&amp;quot;IMC: &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;, imc);&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;  print&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;(&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#032f62;&quot;&gt;&amp;quot;Classificação: &amp;quot;&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;, mensagem);&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#d73a49;&quot;&gt;  return&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#005cc5;&quot;&gt;0&lt;/span&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;;&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Consolas'; font-size:8pt; color:#24292e;&quot;&gt;}&lt;/span&gt;&lt;span style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt; &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="bottomLayout">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QPushButton" name="pushButton">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resources/main.qrc">
+            <normaloff>:/icon/play.ico</normaloff>:/icon/play.ico</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>42</width>
+            <height>42</height>
+           </size>
+          </property>
+          <property name="flat">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="tabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
+          <string>Errors</string>
+         </attribute>
+        </widget>
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
+          <string>Warnings</string>
+         </attribute>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>984</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionCut"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionPaste"/>
+    <addaction name="actionFind_Replace"/>
+   </widget>
+   <widget class="QMenu" name="menuBuild">
+    <property name="title">
+     <string>Build</string>
+    </property>
+    <addaction name="actionBuild"/>
+    <addaction name="actionRun"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionCode_Analysis"/>
+   </widget>
+   <widget class="QMenu" name="menuWindow">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="actionError_Message"/>
+    <addaction name="actionWarning_Messages"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuBuild"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="text">
+    <string>Cut</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="text">
+    <string>Paste</string>
+   </property>
+  </action>
+  <action name="actionFind_Replace">
+   <property name="text">
+    <string>Find/Replace</string>
+   </property>
+  </action>
+  <action name="actionBuild">
+   <property name="text">
+    <string>Build</string>
+   </property>
+  </action>
+  <action name="actionRun">
+   <property name="text">
+    <string>Run</string>
+   </property>
+  </action>
+  <action name="actionCode_Analysis">
+   <property name="text">
+    <string>Code Analysis</string>
+   </property>
+  </action>
+  <action name="actionError_Message">
+   <property name="text">
+    <string>Error Messages</string>
+   </property>
+  </action>
+  <action name="actionWarning_Messages">
+   <property name="text">
+    <string>Warning Messages</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources/main.qrc"/>
+ </resources>
  <connections/>
 </ui>
