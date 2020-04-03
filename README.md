@@ -25,7 +25,8 @@ def main() -> Integer {
 		|> imc <= gordinho -> mensagem = "Acima do peso.";
 		|> otherwise -> mensagem = "Alien!";
 	}
-
+ 
+    // Imprimir na tela
 	print("IMC: ", imc);
 	print("Classificação: ", mensagem);
 
@@ -94,7 +95,7 @@ Comentários de linhas múltiplas devem ser precedidos por "\-" e finalizar com 
 ### Precedência de Operadores
 | Nível| Classe| Operadores|
 |--|--| -- |
-| 1 | Unário | + - ! ~ |
+| 1 | Unário | + - ! ~ ++ --|
 | 2 | Aritmético | ** |
 | 3 | Aritmético | * / % |
 | 4 | Aritmético | + - |
@@ -106,6 +107,7 @@ Comentários de linhas múltiplas devem ser precedidos por "\-" e finalizar com 
 | 10 | Bit a bit | \| |
 | 11 | Lógico | && |
 | 12 | Lógico | \|\| |
+| 13 | Atribuição | = += -+ *= /= %=
 
 ### Tipos
 Os identificadores de tipo iniciam sempre com uma letra maiúscula e são tidos como palavras reservadas.

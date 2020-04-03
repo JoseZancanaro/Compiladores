@@ -21,7 +21,7 @@ SYM_STR     : [^\"]
 SYM_DASH    : \-
 SYM_SLASH   : /
 SYM_VEC_MT  : \[\]
-SYM_COMM_SL : {SYM_DASH}{SYM_DASH}[^\n]*
+SYM_COMM_SL : {SYM_SLASH}{SYM_SLASH}[^\n]*
 SYM_COMM_ML : {SYM_SLASH}{SYM_DASH}((\-[^/])|[^\-])*{SYM_DASH}+{SYM_SLASH}
 
 // Identifiers
@@ -50,6 +50,9 @@ KW_VECTOR : {SYM_VEC_MT}
 KW_CASE   : "case"
 KW_OF     : "of"
 
+KW_SWITCH : "switch"
+KW_BREAK  : "break" 
+
 KW_CHOOSE : "choose from"
 
 KW_IF     : "if"
@@ -75,7 +78,14 @@ KW_FN_RESERVED : ((read)|(print))
 // 2 Operators
 
 // 2.0 Attribution
-OP_ATT  : "="
+OP_ATT      : "="
+OP_INC      : "++"
+OP_DEC      : "--"
+OP_ATT_ADD  : "+="
+OP_ATT_SUB  : "-="
+OP_ATT_MULT : "*="
+OP_ATT_DIV  : "/="
+OP_ATT_REM  : "%="
 
 // 2.1 Arithmetic
 OP_ADD  : "+"
@@ -84,6 +94,7 @@ OP_MULT : "*"
 OP_DIV  : "/"
 OP_REM  : "%"
 OP_EXP  : "**"
+
 
 // 2.2 Relational
 OP_GT  : ">"
@@ -149,12 +160,10 @@ DEL_RCB : "}"
 <definition_list>
 <definition>
 
-<instruction_list>
-<instruction>
-
-<scope>
+<statement_list>
 
 <statement>
+<scope>
 
 <initialization>
 
@@ -167,8 +176,10 @@ DEL_RCB : "}"
 <type_modifier>
 <type_modifier_vector>
 <type_modifier_const>
+<type_modifier_pointer>
 
 <literal>
+<literal_primitive>
 
 <vector_constructor>
 <vector_constructor_values>
@@ -176,6 +187,7 @@ DEL_RCB : "}"
 
 <assignment_list>
 <assignment>
+<assignment_vector_sub>
 
 <loop>
 <loop_while>
@@ -188,19 +200,26 @@ DEL_RCB : "}"
 <loop_range_for>
 <loop_range_for_declaration>
 
-<conditional>
-<conditional_choose>
-<conditional_choose_opt_list>
-<conditional_choose_opt>
-<conditional_choose_otherwise>
+<selection>
+<selection_choose>
+<selection_choose_opt_list>
+<selection_choose_opt>
+<selection_choose_otherwise>
 
-<conditional_case>
-<conditional_case_opt_list>
-<conditional_case_opt>
-<conditional_case_otherwise>
+<selection_case>
+<selection_case_opt_list>
+<selection_case_opt>
+<selection_case_otherwise>
 
-<conditional_if>
-<conditional_if_else>
+<selection_if>
+<selection_if_else>
+
+<selection_switch>
+<selection_switch_case_list>
+<selection_switch_case>
+<selection_switch_otherwise>
+
+<break>
 
 <function>
 <function_name>
@@ -216,6 +235,7 @@ DEL_RCB : "}"
 
 <precedence_tree>
 
+<precedence_l13>
 <precedence_l12>
 <precedence_l11>
 <precedence_l10>
@@ -239,13 +259,11 @@ DEL_RCB : "}"
 <definition_list> ::= <definition> <definition_list> | î ;
 <definition> ::= <declaration> DEL_SEMICOLON | <function> ;
 
-<instruction_list> ::= <instruction> <instruction_list> | î ;
-<instruction> ::= <scope> | <statement> ;
+<statement_list> ::= <statement> <statement_list> | î ;
 
-<scope> ::= DEL_LCB <instruction_list> DEL_RCB ;
-
-// Conditional statement, loop statement, expression statement, declaration statement, assignment statement, function return statement
-<statement> ::=  <conditional> | <loop> | <expression> DEL_SEMICOLON | <initialization> DEL_SEMICOLON | <function_return> DEL_SEMICOLON;
+// Scope statement, selection statement, loop statement, expression statement, declaration statement, assignment statement, function return statement, break statement
+<statement> ::= <scope> | <selection> | <loop> | <expression> DEL_SEMICOLON | <declaration> DEL_SEMICOLON | <function_return> DEL_SEMICOLON | <break> DEL_SEMICOLON ;
+<scope> ::= DEL_LCB <statement_list> DEL_RCB ;
 
 <initialization> ::= <declaration> | <assignment> ;
 
@@ -253,54 +271,64 @@ DEL_RCB : "}"
 <declaration_name_list> ::= <declaration_name> DEL_COMMA <declaration_name_list> | <declaration_name> ;
 <declaration_name> ::= ID_VAR OP_ATT <expression> | ID_VAR ;
 
-// Typename [vector modifier, ...] [const]
+// Typename [vector modifier, ...] [pointer] [const]
 <type_complete> ::= <type> <type_modifier> ;
 <type> ::= KW_VOID | KW_INT | KW_FLOAT | KW_DOUBLE | KW_BOOL | KW_CHAR | KW_STR | KW_ANY ;
-<type_modifier> ::=  <type_modifier_vector> <type_modifier_const> ;
-<type_modifier_vector> ::= KW_VECTOR <type_modifier_vector> | î ;
+<type_modifier> ::= <type_modifier_vector> <type_modifier_const> <type_modifier_pointer> ;
+<type_modifier_vector> ::= KW_VECTOR <type_modifier_vector> | DEL_LSB <literal_primitive> DEL_RSB <type_modifier_vector> | î ;
 <type_modifier_const> ::= KW_CONST | î ;
+<type_modifier_pointer> ::= OP_MULT <type_modifier_pointer> | î ;
 
 // Contant values, vector constructor
-<literal> ::= VAL_INT | VAL_INT_BIN | VAL_INT_HEX | VAL_REAL | VAL_CHAR | VAL_STR | VAL_BOOL_TRUE | VAL_BOOL_FALSE | <vector_constructor> ;
+<literal> ::= <literal_primitive> | <vector_constructor> ;
+<literal_primitive> ::= VAL_INT | VAL_INT_BIN | VAL_INT_HEX | VAL_REAL | VAL_CHAR | VAL_STR | VAL_BOOL_TRUE | VAL_BOOL_FALSE  ;
 
 <vector_constructor> ::= DEL_LSB <vector_constructor_values> DEL_RSB | KW_VECTOR;
 <vector_constructor_values> ::= <expression> DEL_COMMA <vector_constructor_values> | <expression> ;
 <vector_child> ::= ID_VAR DEL_LSB <expression> DEL_RSB ;
 
 <assignment_list> ::= <assignment> DEL_COMMA <assignment_list> | <assignment> ;
-<assignment> ::= ID_VAR OP_ATT <expression> ;
+<assignment> ::= ID_VAR OP_ATT <expression> | <assignment_vector_sub> ;
+<assignment_vector_sub> ::= ID_VAR DEL_LSB <expression> DEL_RSB OP_ATT <expression> ;
 
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
 
-<loop_while> ::= KW_WHILE DEL_LP <expression> DEL_RP <instruction> ;
+<loop_while> ::= KW_WHILE DEL_LP <expression> DEL_RP <statement> ;
 
-<loop_do_while> ::= KW_DO <instruction> KW_WHILE DEL_LP <expression> DEL_RP ;
+<loop_do_while> ::= KW_DO <statement> KW_WHILE DEL_LP <expression> DEL_RP ;
 
-<loop_for> ::= KW_FOR DEL_LP <loop_for_args> DEL_RP <instruction> ;
+<loop_for> ::= KW_FOR DEL_LP <loop_for_args> DEL_RP <statement> ;
 <loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
 <loop_for_args_init> ::= <initialization> | î ;
 <loop_for_args_test> ::= <expression> | î ;
 <loop_for_args_op> ::= <assignment_list> | î ;
 
-<loop_range_for> ::= KW_FOR DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <instruction> ;
+<loop_range_for> ::= KW_FOR DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <statement> ;
 <loop_range_for_declaration> ::= <type_complete> ID_VAR | ID_VAR ;
 
-// Conditional Branches: choose-from, case-of, if-then-else
-<conditional> ::= <conditional_choose> | <conditional_case> | <conditional_if> ;
+// Selection Branches: choose-from, case-of, if-then-else, switch-case
+<selection> ::= <selection_choose> | <selection_if> | <selection_switch> ; // | <selection_case>
 
-<conditional_choose> ::= KW_CHOOSE DEL_LCB <conditional_choose_opt_list> DEL_RCB ;
-<conditional_choose_opt_list> ::= <conditional_choose_opt> <conditional_choose_opt_list> | <conditional_choose_opt> | <conditional_choose_otherwise> ;
-<conditional_choose_opt> ::= KW_PIPE <expression> DEL_ARROW <instruction> ;
-<conditional_choose_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <instruction> ;
+<selection_choose> ::= KW_CHOOSE DEL_LCB <selection_choose_opt_list> DEL_RCB ;
+<selection_choose_opt_list> ::= <selection_choose_opt> <selection_choose_opt_list> | <selection_choose_opt> | <selection_choose_otherwise> ;
+<selection_choose_opt> ::= KW_PIPE <expression> DEL_ARROW <statement> ;
+<selection_choose_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <statement> ;
 
-<conditional_case> ::= KW_CASE ID_VAR KW_OF DEL_LCB <conditional_case_opt_list> DEL_RCB ;
-<conditional_case_opt_list> ::= <conditional_case_opt> <conditional_case_opt_list> | <conditional_case_opt> | <conditional_case_otherwise> ;
-<conditional_case_opt> ::= KW_PIPE <literal> DEL_ARROW <instruction> ;
-<conditional_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <instruction> ;
+<selection_case> ::= KW_CASE ID_VAR KW_OF DEL_LCB <selection_case_opt_list> DEL_RCB ;
+<selection_case_opt_list> ::= <selection_case_opt> <selection_case_opt_list> | <selection_case_opt> | <selection_case_otherwise> ;
+<selection_case_opt> ::= KW_PIPE <literal> DEL_ARROW <statement> ;
+<selection_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <statement> ;
 
-<conditional_if> ::= KW_IF DEL_LP <expression> DEL_RP <scope> | KW_IF DEL_LP <expression> DEL_RP <scope> <conditional_if_else> ;
-<conditional_if_else> ::= KW_ELSE <scope> ;
+<selection_if> ::= KW_IF DEL_LP <expression> DEL_RP <scope> | KW_IF DEL_LP <expression> DEL_RP <scope> <selection_if_else> ;
+<selection_if_else> ::= KW_ELSE <scope> ; 
+
+<selection_switch> ::= KW_SWITCH DEL_LP <expression> DEL_RP DEL_LCB <selection_switch_case_list> DEL_RCB ;
+<selection_switch_case_list> ::= <selection_switch_case> <selection_switch_case_list> | <selection_switch_case> | <selection_switch_otherwise> ;
+<selection_switch_case> ::= KW_CASE <expression> DEL_COLON <statement_list> ;
+<selection_switch_otherwise> ::= KW_OTHERWISE DEL_COLON <statement_list> ;
+
+<break> ::= KW_BREAK ;
 
 // Subroutines: function definition
 <function> ::= KW_DEF <function_name> DEL_LP <function_arg_list> DEL_RP DEL_ARROW <type_complete> <scope> ;
@@ -316,29 +344,37 @@ DEL_RCB : "}"
 // Expression and operator precedence tree
 <expression> ::= <precedence_tree> ;
 
-<precedence_tree> ::= <precedence_l12> ;
+<precedence_tree> ::= <precedence_l13> ;
 
-<precedence_l12> ::= <precedence_l12> OP_OR     <precedence_l11> | <precedence_l11> ;	// ||
-<precedence_l11> ::= <precedence_l11> OP_AND    <precedence_l10> | <precedence_l10> ;	// &&
-<precedence_l10> ::= <precedence_l10> OP_BW_OR  <precedence_l09> | <precedence_l09> ;	// |
-<precedence_l09> ::= <precedence_l09> OP_BW_XOR <precedence_l08> | <precedence_l08> ;	// ^
-<precedence_l08> ::= <precedence_l08> OP_BW_AND <precedence_l07> | <precedence_l07> ;	// &
-<precedence_l07> ::= <precedence_l07> OP_EQ     <precedence_l06> |			// == /=
-		     <precedence_l07> OP_NEQ    <precedence_l06> | <precedence_l06> ;
-<precedence_l06> ::= <precedence_l06> OP_GT     <precedence_l05> |			// > < >= <=
-		     <precedence_l06> OP_LT     <precedence_l05> |
-		     <precedence_l06> OP_GTE    <precedence_l05> |
-		     <precedence_l06> OP_LTE    <precedence_l05> | <precedence_l05> ;
-<precedence_l05> ::= <precedence_l05> OP_BW_SR  <precedence_l04> |			// >> <<
-		     <precedence_l05> OP_BW_SL  <precedence_l04> | <precedence_l04> ;
-<precedence_l04> ::= <precedence_l04> OP_ADD    <precedence_l03> |			// + -
-		     <precedence_l04> OP_SUB    <precedence_l03> | <precedence_l03> ;
-<precedence_l03> ::= <precedence_l03> OP_MULT   <precedence_l02> |			// * / %
-		     <precedence_l03> OP_DIV    <precedence_l02> |
-		     <precedence_l03> OP_REM    <precedence_l02> | <precedence_l02> ;
-<precedence_l02> ::= <precedence_l02> OP_EXP    <precedence_l01> | <precedence_l01> ;	// **
-<precedence_l01> ::= OP_ADD <value> | OP_SUB     <value> |					// unary (+ - ! ~) (expr)
-		     OP_NOT <value> | OP_BW_COMP <value> |
-		     DEL_LP <precedence_l12> DEL_RP | <value> ;
+<precedence_l13> ::= <precedence_l13> OP_ATT      <precedence_l12> |                        // = += -+ *= /= %=
+                       <precedence_l13> OP_ATT_ADD  <precedence_l12> |
+		     <precedence_l13> OP_ATT_SUB  <precedence_l12> |
+		     <precedence_l13> OP_ATT_MULT <precedence_l12> |
+		     <precedence_l13> OP_ATT_DIV  <precedence_l12> |
+		     <precedence_l13> OP_ATT_REM   <precedence_l12> | <precedence_l12> ;
+<precedence_l12> ::= <precedence_l12> OP_OR       <precedence_l11> | <precedence_l11> ;	// ||
+<precedence_l11> ::= <precedence_l11> OP_AND      <precedence_l10> | <precedence_l10> ;	// &&
+<precedence_l10> ::= <precedence_l10> OP_BW_OR    <precedence_l09> | <precedence_l09> ;	// |
+<precedence_l09> ::= <precedence_l09> OP_BW_XOR   <precedence_l08> | <precedence_l08> ;	// ^
+<precedence_l08> ::= <precedence_l08> OP_BW_AND   <precedence_l07> | <precedence_l07> ;	// &
+<precedence_l07> ::= <precedence_l07> OP_EQ       <precedence_l06> |			// == /=
+		     <precedence_l07> OP_NEQ      <precedence_l06> | <precedence_l06> ;
+<precedence_l06> ::= <precedence_l06> OP_GT       <precedence_l05> |			// > < >= <=
+		     <precedence_l06> OP_LT       <precedence_l05> |
+		     <precedence_l06> OP_GTE      <precedence_l05> |
+		     <precedence_l06> OP_LTE      <precedence_l05> | <precedence_l05> ;
+<precedence_l05> ::= <precedence_l05> OP_BW_SR    <precedence_l04> |			// >> <<
+		     <precedence_l05> OP_BW_SL    <precedence_l04> | <precedence_l04> ;
+<precedence_l04> ::= <precedence_l04> OP_ADD      <precedence_l03> |			// + -
+		     <precedence_l04> OP_SUB      <precedence_l03> | <precedence_l03> ;
+<precedence_l03> ::= <precedence_l03> OP_MULT     <precedence_l02> |			// * / %
+		     <precedence_l03> OP_DIV      <precedence_l02> |
+		     <precedence_l03> OP_REM      <precedence_l02> | <precedence_l02> ;
+<precedence_l02> ::= <precedence_l02> OP_EXP      <precedence_l01> | <precedence_l01> ;	// **
+<precedence_l01> ::= OP_ADD <value> | OP_SUB       <value> |					// unary (+ - ! ~ ++ --) (expr)
+		     OP_NOT <value> | OP_BW_COMP   <value> |
+                       OP_INC <value> | OP_DEC       <value> | 
+		     <value> OP_INC | <value>     OP_DEC   |
+		     DEL_LP <precedence_tree> DEL_RP | <value> ;
 
 <value> ::= ID_VAR | <function_call> | <vector_child> | <literal> ;
