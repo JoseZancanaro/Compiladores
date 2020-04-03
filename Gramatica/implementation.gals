@@ -52,6 +52,9 @@ KW_OF     : "of"
 
 KW_CHOOSE : "choose from"
 
+KW_IF     : "if"
+KW_ELSE   : "else"
+
 KW_PIPE       : "|>"
 KW_OTHERWISE  : "otherwise"
 
@@ -196,6 +199,9 @@ DEL_RCB : "}"
 <conditional_case_opt>
 <conditional_case_otherwise>
 
+<conditional_if>
+<conditional_if_else>
+
 <function>
 <function_name>
 <function_arg_list>
@@ -267,21 +273,21 @@ DEL_RCB : "}"
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
 
-<loop_while> ::= KW_WHILE DEL_LP <expression> DEL_RP <scope> ;
+<loop_while> ::= KW_WHILE DEL_LP <expression> DEL_RP <instruction> ;
 
-<loop_do_while> ::= KW_DO <scope> KW_WHILE DEL_LP <expression> DEL_RP ;
+<loop_do_while> ::= KW_DO <instruction> KW_WHILE DEL_LP <expression> DEL_RP ;
 
-<loop_for> ::= KW_FOR DEL_LP <loop_for_args> DEL_RP <scope> ;
+<loop_for> ::= KW_FOR DEL_LP <loop_for_args> DEL_RP <instruction> ;
 <loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
 <loop_for_args_init> ::= <initialization> | î ;
 <loop_for_args_test> ::= <expression> | î ;
 <loop_for_args_op> ::= <assignment_list> | î ;
 
-<loop_range_for> ::= KW_FOR DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <scope> ;
+<loop_range_for> ::= KW_FOR DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <instruction> ;
 <loop_range_for_declaration> ::= <type_complete> ID_VAR | ID_VAR ;
 
-// Conditional Branches: choose-from, case-of
-<conditional> ::= <conditional_choose> | <conditional_case> ;
+// Conditional Branches: choose-from, case-of, if-then-else
+<conditional> ::= <conditional_choose> | <conditional_case> | <conditional_if> ;
 
 <conditional_choose> ::= KW_CHOOSE DEL_LCB <conditional_choose_opt_list> DEL_RCB ;
 <conditional_choose_opt_list> ::= <conditional_choose_opt> <conditional_choose_opt_list> | <conditional_choose_opt> | <conditional_choose_otherwise> ;
@@ -292,6 +298,9 @@ DEL_RCB : "}"
 <conditional_case_opt_list> ::= <conditional_case_opt> <conditional_case_opt_list> | <conditional_case_opt> | <conditional_case_otherwise> ;
 <conditional_case_opt> ::= KW_PIPE <literal> DEL_ARROW <instruction> ;
 <conditional_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <instruction> ;
+
+<conditional_if> ::= KW_IF DEL_LP <expression> DEL_RP <scope> | KW_IF DEL_LP <expression> DEL_RP <scope> <conditional_if_else> ;
+<conditional_if_else> ::= KW_ELSE <scope> ;
 
 // Subroutines: function definition
 <function> ::= KW_DEF <function_name> DEL_LP <function_arg_list> DEL_RP DEL_ARROW <type_complete> <scope> ;
@@ -305,7 +314,6 @@ DEL_RCB : "}"
 <function_call_arg> ::= <expression> ;
 
 // Expression and operator precedence tree
-
 <expression> ::= <precedence_tree> ;
 
 <precedence_tree> ::= <precedence_l12> ;
