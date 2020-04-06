@@ -231,6 +231,7 @@ DEL_RCB : "}"
 <function_call_arg_list>
 <function_call_arg>
 
+<expression_list>
 <expression>
 
 <precedence_tree>
@@ -302,7 +303,7 @@ DEL_RCB : "}"
 <loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
 <loop_for_args_init> ::= <initialization> | î ;
 <loop_for_args_test> ::= <expression> | î ;
-<loop_for_args_op> ::= <assignment_list> | î ;
+<loop_for_args_op> ::= <expression_list> | î ;
 
 <loop_range_for> ::= KW_FOR DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <statement> ;
 <loop_range_for_declaration> ::= <type_complete> ID_VAR | ID_VAR ;
@@ -342,6 +343,7 @@ DEL_RCB : "}"
 <function_call_arg> ::= <expression> ;
 
 // Expression and operator precedence tree
+<expression_list> ::= <expression> DEL_COMMA <expression_list> | <expression> ;
 <expression> ::= <precedence_tree> ;
 
 <precedence_tree> ::= <precedence_l13> ;
