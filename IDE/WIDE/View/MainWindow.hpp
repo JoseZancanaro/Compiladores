@@ -2,6 +2,8 @@
 #define MAINWINDOW_HPP
 
 #include <QMainWindow>
+#include <optional>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -15,7 +17,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void dispatchNew();
+    void dispatchOpen();
+    void dispatchSave();
+    void dispatchSaveAs();
+    void dispatchQuit();
+
 private:
     Ui::MainWindow *ui;
+
+    std::optional<QString> current;
 };
 #endif // MAINWINDOW_HPP

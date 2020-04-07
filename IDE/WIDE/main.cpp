@@ -1,10 +1,15 @@
-#include "MainWindow.hpp"
-
 #include <iostream>
 #include <QApplication>
 
+#include "View/MainWindow.hpp"
+
+#include "Model/IO/FileHandler.hpp"
+
 int main(int argc, char *argv[])
 {
+    std::cout << wpl::io::loadFromFile("./example.txt") << std::endl;
+
+
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
