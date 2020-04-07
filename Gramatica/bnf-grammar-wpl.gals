@@ -373,10 +373,10 @@ DEL_RCB : "}"
 		     <precedence_l03> OP_DIV      <precedence_l02> |
 		     <precedence_l03> OP_REM      <precedence_l02> | <precedence_l02> ;
 <precedence_l02> ::= <precedence_l02> OP_EXP      <precedence_l01> | <precedence_l01> ;	// **
-<precedence_l01> ::= OP_ADD <value> | OP_SUB       <value> |					// unary (+ - ! ~ ++ --) (expr)
+<precedence_l01> ::= OP_ADD <value> | OP_SUB       <value> |				// unary (+ - ! ~ ++ --) (expr)
 		     OP_NOT <value> | OP_BW_COMP   <value> |
                        OP_INC <value> | OP_DEC       <value> | 
 		     <value> OP_INC | <value>     OP_DEC   |
-		     DEL_LP <precedence_tree> DEL_RP | <value> ;
+		     <value> ;
 
-<value> ::= ID_VAR | <function_call> | <vector_child> | <literal> ;
+<value> ::= ID_VAR | <function_call> | <vector_child> | <literal> | DEL_LP <precedence_tree> DEL_RP ;

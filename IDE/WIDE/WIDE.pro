@@ -17,13 +17,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    MainWindow.cpp
+    View/MainWindow.cpp
 
 HEADERS += \
-    MainWindow.hpp
+    View/MainWindow.hpp
 
 FORMS += \
-    MainWindow.ui
+    View/MainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -31,4 +31,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    resources/main.qrc
+    View/resources/main.qrc
