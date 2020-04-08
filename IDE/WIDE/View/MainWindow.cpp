@@ -1,6 +1,8 @@
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
 
+#include "AnalysisWindow.hpp"
+
 #include <iostream>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -13,16 +15,22 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , analysisWindow(nullptr)
     , current({})
 {
     ui->setupUi(this);
 
     /* Actions */
+    /* Actions: File */
     connect(ui->actionNew, SIGNAL(triggered(bool)), this, SLOT(dispatchNew()));
     connect(ui->actionOpen, SIGNAL(triggered(bool)), this, SLOT(dispatchOpen()));
     connect(ui->actionSave, SIGNAL(triggered(bool)), this, SLOT(dispatchSave()));
     connect(ui->actionSaveAs, SIGNAL(triggered(bool)), this, SLOT(dispatchSaveAs()));
     connect(ui->actionQuit, SIGNAL(triggered(bool)), this, SLOT(dispatchQuit()));
+
+    /* Actions: Tools */
+    connect(ui->actionCodeAnalysis, SIGNAL(triggered(bool)), this, SLOT(dispatchCodeAnalysis()));
+
 
     /* Buttons */
     connect(ui->btnRun, SIGNAL(clicked(bool)), this, SLOT(dispatchRun()));
@@ -115,7 +123,22 @@ void MainWindow::dispatchRun()
     }
 
     if (context.success) {
-        walk(context.tree.value());
-        QMessageBox::information(this, QString("Deu bom"), QString("O programa executou sem erros."));
+        QMessageBox::information(this, QString("Success"), QString("The source code has no errors."));
+    }
+
+    if (this->analysisWindow) {
+        this->analysisWindow->setTree(context.tree.value_or(Composite("<invalid>")));
+    }
+}
+
+void MainWindow::dispatchCodeAnalysis()
+{
+    if (this->analysisWindow) {
+        this->analysisWindow->setHidden(false);
+        this->analysisWindow->activateWindow();
+    }
+    else {
+        this->analysisWindow = new AnalysisWindow(this);
+        this->analysisWindow->show();
     }
 }

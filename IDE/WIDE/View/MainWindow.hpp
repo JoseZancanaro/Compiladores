@@ -9,6 +9,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class AnalysisWindow;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -24,9 +26,11 @@ private slots:
     void dispatchSaveAs();
     void dispatchQuit();
     void dispatchRun();
+    void dispatchCodeAnalysis();
 
 private:
     Ui::MainWindow *ui;
+    AnalysisWindow *analysisWindow;
 
     std::optional<QString> current;
 };

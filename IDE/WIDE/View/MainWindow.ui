@@ -240,7 +240,7 @@ p, li { white-space: pre-wrap; }
     <property name="title">
      <string>Tools</string>
     </property>
-    <addaction name="actionCode_Analysis"/>
+    <addaction name="actionCodeAnalysis"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -312,7 +312,7 @@ p, li { white-space: pre-wrap; }
     <string>Run</string>
    </property>
   </action>
-  <action name="actionCode_Analysis">
+  <action name="actionCodeAnalysis">
    <property name="text">
     <string>Code Analysis</string>
    </property>

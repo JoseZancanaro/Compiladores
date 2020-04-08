@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Code Analysis</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
@@ -37,7 +37,7 @@
        <item>
         <widget class="QPushButton" name="btnClose">
          <property name="text">
-          <string>Fechar</string>
+          <string>Close</string>
          </property>
         </widget>
        </item>
