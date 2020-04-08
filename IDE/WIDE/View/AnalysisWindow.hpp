@@ -1,13 +1,13 @@
 #ifndef ANALYSISWINDOW_HPP
 #define ANALYSISWINDOW_HPP
 
-#include <QWidget>
+#include <QDialog>
 
 namespace Ui {
 class AnalysisWindow;
 }
 
-class AnalysisWindow : public QWidget
+class AnalysisWindow : public QDialog
 {
     Q_OBJECT
 
