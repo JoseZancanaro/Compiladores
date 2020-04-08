@@ -1,4 +1,3 @@
-#include <iostream>
 #include <QApplication>
 
 #include "View/MainWindow.hpp"

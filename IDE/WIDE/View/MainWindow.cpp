@@ -36,6 +36,10 @@ MainWindow::~MainWindow()
 void MainWindow::dispatchNew()
 {
     this->ui->textEdit->clear();
+    std::string path = "../../Docs/teste.txt";
+    std::string cont = wpl::io::loadFromFile(path);
+    //this->ui->textEdit->setPlainText(QString::toStdString(cont));
+
 }
 
 void MainWindow::dispatchOpen()
@@ -43,18 +47,18 @@ void MainWindow::dispatchOpen()
     QString path = QFileDialog::getOpenFileName(this, QString("Open file"));
 
     if (!path.isEmpty()) {
-        std::string content = wpl::io::loadFromFile(path.toStdString());
+        auto content = wpl::io::loadFromFile(path.toStdWString());
+        std::wcout << content.toStdWString() << std::endl;
 
-        this->ui->textEdit->setPlainText(QString::fromStdString(content));
+        this->ui->textEdit->setPlainText(content);
         this->current = path;
     }
 }
 
-
 void MainWindow::dispatchSave()
 {
     if (this->current.has_value()) {
-        wpl::io::saveToFile(this->current.value().toStdString(), ui->textEdit->toPlainText().toStdString());
+        wpl::io::saveToFile(this->current.value().toStdWString(), ui->textEdit->toPlainText().toStdWString());
     }
     else {
         this->dispatchSaveAs();
@@ -71,7 +75,7 @@ void MainWindow::dispatchSaveAs()
             path.append(".wpl");
         }
 
-        wpl::io::saveToFile(path.toStdString(), this->ui->textEdit->toPlainText().toStdString());
+        wpl::io::saveToFile(path.toStdWString(), this->ui->textEdit->toPlainText().toStdWString());
 
         this->current = path;
     }
@@ -96,7 +100,6 @@ void MainWindow::dispatchRun()
     std::string input = this->ui->textEdit->toPlainText().toStdString();
     Parser parser(input);
 
-    // { std::vector, bool }
     auto context = parser.parse();
 
     this->ui->listErrors->clear();
