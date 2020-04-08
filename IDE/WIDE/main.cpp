@@ -7,9 +7,6 @@
 
 int main(int argc, char *argv[])
 {
-    std::cout << wpl::io::loadFromFile("./example.txt") << std::endl;
-
-
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

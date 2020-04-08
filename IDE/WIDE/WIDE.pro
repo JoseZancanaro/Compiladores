@@ -18,15 +18,35 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     Control/AppControl.cpp \
     Model/IO/FileHandler.cpp \
+    Model/Parser/Analysers/Constants.cpp \
+    Model/Parser/Analysers/Lexico.cpp \
+    Model/Parser/Analysers/Semantico.cpp \
+    Model/Parser/Analysers/Sintatico.cpp \
+    Model/Parser/Parser.cpp \
+    View/AnalysisWindow.cpp \
     main.cpp \
     View/MainWindow.cpp
 
 HEADERS += \
     Control/AppControl.hpp \
+    Model/Composite.hpp \
     Model/IO/FileHandler.hpp \
+    Model/Parser/Analysers/AnalysisError.hpp \
+    Model/Parser/Analysers/Constants.hpp \
+    Model/Parser/Analysers/LexicalError.hpp \
+    Model/Parser/Analysers/Lexico.hpp \
+    Model/Parser/Analysers/SemanticError.hpp \
+    Model/Parser/Analysers/Semantico.hpp \
+    Model/Parser/Analysers/Sintatico.hpp \
+    Model/Parser/Analysers/Symbols.hpp \
+    Model/Parser/Analysers/SyntaticError.hpp \
+    Model/Parser/Analysers/Token.hpp \
+    Model/Parser/Parser.hpp \
+    View/AnalysisWindow.hpp \
     View/MainWindow.hpp
 
 FORMS += \
+    View/AnalysisWindow.ui \
     View/MainWindow.ui
 
 # Default rules for deployment.

@@ -23,6 +23,7 @@ private slots:
     void dispatchSave();
     void dispatchSaveAs();
     void dispatchQuit();
+    void dispatchRun();
 
 private:
     Ui::MainWindow *ui;
