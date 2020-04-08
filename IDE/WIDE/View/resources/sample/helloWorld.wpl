@@ -1,0 +1,4 @@
+def main() -> Integer {
+    print("Hello World!");
+    return 0;
+}

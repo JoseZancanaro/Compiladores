@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>icon/snowflake.ico</file>
         <file>icon/play.ico</file>
+        <file>sample/helloWorld.wpl</file>
     </qresource>
 </RCC>

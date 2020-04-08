@@ -36,6 +36,13 @@ MainWindow::~MainWindow()
 void MainWindow::dispatchNew()
 {
     this->ui->textEdit->clear();
+
+    QFile sample(":/sample/helloWorld.wpl");
+    if (sample.open(QIODevice::ReadOnly | QIODevice::Text)) {
+         QTextStream text(&sample);
+         QString content = text.readAll();
+         this->ui->textEdit->setPlainText(content);
+    }
 }
 
 void MainWindow::dispatchOpen()
