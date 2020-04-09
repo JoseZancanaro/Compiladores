@@ -2,13 +2,9 @@
 
 namespace wpl {
 
-void Lexico::setInput(std::istream &input)
+void Lexico::setInput(const char *input)
 {
-    std::istreambuf_iterator<char> in(input);
-    std::istreambuf_iterator<char> eof;
-
-    this->input.assign(in, eof);
-
+    this->input = input;
     setPosition(0);
 }
 

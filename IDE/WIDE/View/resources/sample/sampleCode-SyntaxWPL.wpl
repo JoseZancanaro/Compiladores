@@ -1,4 +1,12 @@
-// Código teste - WPL
+// Sample Test Code - WPL
+
+/- 
+ - Professor: Eduardo Alves da Silva.
+ - Students: Israel Efraim de Oliveira, José Carlos Zancanaro.
+ - Computer Science: Compilers           
+ -/
+ 
+/--/
 
 def funcao1(Integer[10] a) -> Integer {
   if ( a[0] > a[1] ) {

@@ -1,21 +1,19 @@
-#ifndef LEXICAL_HPP
-#define LEXICAL_HPP
+#ifndef LEXICO_HPP
+#define LEXICO_HPP
 
 #include "Token.hpp"
 #include "LexicalError.hpp"
 
 #include <string>
-#include <iostream>
 
 namespace wpl {
 
 class Lexico
 {
 public:
-    Lexico(std::istream &input) { setInput(input); }
-    Lexico() : position(0), input("") { }
+    Lexico(const char *input = "") { setInput(input); }
 
-    void setInput(std::istream &input);
+    void setInput(const char *input);
     void setPosition(unsigned pos) { position = pos; }
     Token *nextToken();
 

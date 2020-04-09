@@ -11,9 +11,7 @@ Parser::Parser()
 Parser::Parser(std::string const& input)
     : lex{}, syntactic{}, semantic{}
 {
-    std::stringstream ss;
-    ss << input;
-    lex.setInput(ss);
+    lex.setInput(input.c_str());
 }
 
 auto Parser::parse() -> ParserContext {
@@ -26,9 +24,7 @@ auto Parser::parse() -> ParserContext {
 }
 
 auto Parser::parse(std::string const& input) -> ParserContext {
-    std::stringstream ss;
-    ss << input;
-    this->lex.setInput(ss);
+    this->lex.setInput(input.c_str());
     return this->parse();
 }
 
