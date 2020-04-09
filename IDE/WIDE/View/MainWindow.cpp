@@ -4,9 +4,11 @@
 #include "AnalysisWindow.hpp"
 
 #include <iostream>
+
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QDebug>
+#include <QTextStream>
+#include <QColor>
 
 // Control
 #include "Model/Parser/Parser.hpp"
@@ -27,6 +29,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSave, SIGNAL(triggered(bool)), this, SLOT(dispatchSave()));
     connect(ui->actionSaveAs, SIGNAL(triggered(bool)), this, SLOT(dispatchSaveAs()));
     connect(ui->actionQuit, SIGNAL(triggered(bool)), this, SLOT(dispatchQuit()));
+
+    /* Actions: Build */
+    connect(ui->actionRun, SIGNAL(triggered(bool)), this, SLOT(dispatchRun()));
 
     /* Actions: Tools */
     connect(ui->actionCodeAnalysis, SIGNAL(triggered(bool)), this, SLOT(dispatchCodeAnalysis()));
@@ -111,23 +116,29 @@ void MainWindow::dispatchRun()
     std::string input = this->ui->textEdit->toPlainText().toStdString();
     Parser parser(input);
 
-    // { std::vector, bool }
-    auto context = parser.parse();
+    auto [errors, success, tree] = parser.parse();
 
     this->ui->listErrors->clear();
 
-    for (auto const& e : context.errors) {
-        this->ui->listErrors->addItem(
-            QString(e.getMessage()).append(" at ").append(QString::number(e.getPosition()))
-        );
+    for (auto const& e : errors) {
+        this->ui->listErrors->addItem(QString(e.getMessage()));
     }
 
-    if (context.success) {
-        QMessageBox::information(this, QString("Success"), QString("The source code has no errors."));
-    }
+    auto [color, message] = [status = success](){
+        if (status) {
+            return std::make_pair(QColor(0, 128, 0), "Compiler returned: SUCCESS.");
+        } else {
+            return std::make_pair(QColor(128, 0, 0), "Compiler returned: FAILURE.");
+        }
+    }();
+
+    this->ui->textOut->setTextColor(color);
+    this->ui->textOut->append(message);
+
+    this->ui->tabWidget->setCurrentIndex(Tabs::COMPILER_OUTPUT);
 
     if (this->analysisWindow) {
-        this->analysisWindow->setTree(context.tree.value_or(Composite("<invalid>")));
+        this->analysisWindow->setTree(tree.value_or(Composite<std::string>("<invalid>")));
     }
 }
 

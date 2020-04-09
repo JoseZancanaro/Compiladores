@@ -27,9 +27,45 @@ void Sintatico::parse(Lexico *scanner, Semantico *semanticAnalyser)
         ;
 }
 
+SyntaticError Sintatico::createDetailedError(int state, Token* token) const
+{
+    auto error = std::string("Error at state ") + std::to_string(state);
+
+    auto pair = std::string(" (") + std::to_string(token->getPosition())
+                    + ", " + token->getLexeme() + ").";
+
+    // TODO: Alert what was expected
+    /*
+    auto productions = PARSER_TABLE[state];
+    auto const qty = sizeof(symbols) / sizeof(symbols[0]);
+
+    std::vector<std::string> expected;
+
+    for (std::size_t i = 0; i < qty; ++i) {
+        if (auto const production = productions[i];
+            production[0] != ERROR && std::string(symbols[i]).find("<") == std::string::npos) {
+            expected.push_back(symbols[i]);
+        }
+    }
+
+    std::string buffer("Expected ");
+
+    if (expected.size() > 1) {
+        for (std::size_t i = 0; i < expected.size() - 1; ++i) {
+            buffer += expected.at(i) + ", ";
+        }
+        buffer += "ou " + expected.at(expected.size() - 1) + ".";
+    } else if (expected.size() == 1) {
+        buffer += expected.at(1) + ".";
+    }
+    */
+
+    return SyntaticError(error + pair, token->getPosition());
+}
+
 bool Sintatico::step()
 {
-    if (currentToken == 0) //Fim de Sentensa
+    if (currentToken == 0) //Fim de Sentença
     {
         int pos = 0;
         if (previousToken != 0)
@@ -95,7 +131,7 @@ bool Sintatico::step()
             return true;
 
         case ERROR:
-            throw SyntaticError(PARSER_ERROR[state], currentToken->getPosition());
+            throw createDetailedError(state, currentToken);
     }
     return false;
 }

@@ -15,6 +15,8 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
+    enum Tabs { ERRORS, WARNINGS, COMPILER_OUTPUT };
+
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();

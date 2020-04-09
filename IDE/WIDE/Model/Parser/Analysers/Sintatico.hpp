@@ -23,6 +23,8 @@ public:
         if (currentToken != 0)  delete currentToken;
     }
 
+    SyntaticError createDetailedError(int state, Token* token) const;
+
     void parse(Lexico *scanner, Semantico *semanticAnalyser);
 
     std::stack<Composite<std::string>> getTree() const;
