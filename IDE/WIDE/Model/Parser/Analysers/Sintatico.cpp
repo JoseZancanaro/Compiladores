@@ -27,24 +27,23 @@ void Sintatico::parse(Lexico *scanner, Semantico *semanticAnalyser)
         ;
 }
 
+// Custom error report :)
 SyntaticError Sintatico::createDetailedError(int state, Token* token) const
 {
     auto error = std::string("Error at state ") + std::to_string(state);
 
     auto pair = std::string(" (") + std::to_string(token->getPosition())
-                    + ", " + token->getLexeme() + ").";
+                    + ", " + token->getLexeme() + "): ";
 
-    // TODO: Alert what was expected
-    /*
     auto productions = PARSER_TABLE[state];
     auto const qty = sizeof(symbols) / sizeof(symbols[0]);
 
     std::vector<std::string> expected;
 
-    for (std::size_t i = 0; i < qty; ++i) {
+    for (std::size_t i = 1; i < qty; ++i) {
         if (auto const production = productions[i];
-            production[0] != ERROR && std::string(symbols[i]).find("<") == std::string::npos) {
-            expected.push_back(symbols[i]);
+            production[0] != ERROR && std::string(symbols[i + 1]).find("<") == std::string::npos) {
+            expected.push_back(symbols[i + 1]);
         }
     }
 
@@ -56,11 +55,10 @@ SyntaticError Sintatico::createDetailedError(int state, Token* token) const
         }
         buffer += "ou " + expected.at(expected.size() - 1) + ".";
     } else if (expected.size() == 1) {
-        buffer += expected.at(1) + ".";
+        buffer += expected.at(0) + ".";
     }
-    */
 
-    return SyntaticError(error + pair, token->getPosition());
+    return SyntaticError(error + pair + buffer, token->getPosition());
 }
 
 bool Sintatico::step()

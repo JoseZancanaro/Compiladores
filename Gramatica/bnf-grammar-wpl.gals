@@ -322,7 +322,7 @@ DEL_RCB : "}"
 <selection_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <statement> ;
 
 <selection_if> ::= KW_IF DEL_LP <expression> DEL_RP <scope> | KW_IF DEL_LP <expression> DEL_RP <scope> <selection_if_else> ;
-<selection_if_else> ::= KW_ELSE <scope> ; 
+<selection_if_else> ::= KW_ELSE <statement> ; 
 
 <selection_switch> ::= KW_SWITCH DEL_LP <expression> DEL_RP DEL_LCB <selection_switch_case_list> DEL_RCB ;
 <selection_switch_case_list> ::= <selection_switch_case> <selection_switch_case_list> | <selection_switch_case> | <selection_switch_otherwise> ;

@@ -2,6 +2,7 @@
 #include "ui_AnalysisWindow.h"
 
 #include <queue>
+#include <QTreeWidget>
 
 AnalysisWindow::AnalysisWindow(QWidget *parent) :
     QDialog(parent),

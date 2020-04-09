@@ -1,0 +1,59 @@
+// Código teste - WPL
+
+def funcao1(Integer[10] a) -> Integer {
+  if ( a[0] > a[1] ) {
+    Integer i;
+    for ( i = 0; i < 10; i++ ) {
+        a[i] = a[10-i-1] * a[i];
+    }
+  }
+
+  if ( a[5] > a[10] ) {
+    while ( i > 0 && x /= 10 ) {
+      i = x - 1;
+    }
+  } else {
+    do {
+      x += i * y;
+    } while ( x + 1 * 2 -3 || y && 4 )
+  }
+
+
+  return x;
+}
+
+def funcao2(Float a, Char* b) -> Integer {
+
+  return a * b;
+}
+
+def oi() -> Void {
+  print("Oi");
+}
+
+def main() -> Integer {
+
+  oi();
+
+  Integer a,b;
+  
+  read(a);
+  b = a * 2;
+
+  vet[0] = a;
+
+  vet[5] = b;
+
+  vet[9] = vet[1] + vet[2];
+
+  vet[7] = funcao1(vet);
+
+  Integer[10] vet;
+  
+  c = a + b + vet[7];
+
+  a = funcao2(c,b);
+
+  print("O resultado e':",a);
+  
+}
