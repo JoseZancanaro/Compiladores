@@ -22,7 +22,8 @@ SyntaxHighlighter::SyntaxHighlighter(QTextDocument *parent)
         highlightingRules.append(rule);
     }
 
-    quotationFormat.setForeground(Qt::darkGreen);
+    quotationFormat.setForeground(QColor(0, 128, 43));
+    quotationFormat.setFontWeight(QFont::Bold);
     rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
     rule.format = quotationFormat;
     highlightingRules.append(rule);

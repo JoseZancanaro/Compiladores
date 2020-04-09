@@ -84,7 +84,7 @@ enum TokenId
     t_DEL_RCB = 76
 };
 
-const int STATES_COUNT = 180;
+const int STATES_COUNT = 181;
 
 extern int SCANNER_TABLE[STATES_COUNT][256];
 
