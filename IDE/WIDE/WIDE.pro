@@ -23,9 +23,12 @@ SOURCES += \
     Model/Parser/Analysers/Semantico.cpp \
     Model/Parser/Analysers/Sintatico.cpp \
     Model/Parser/Parser.cpp \
+    View/CodeEditor/CodeEditor.cpp \
     View/AnalysisWindow.cpp \
-    main.cpp \
-    View/MainWindow.cpp
+    View/CodeEditor/LineNumberArea.cpp \
+    View/CodeEditor/SyntaxHighlighter.cpp \
+    View/MainWindow.cpp \
+    main.cpp
 
 HEADERS += \
     Control/AppControl.hpp \
@@ -42,7 +45,10 @@ HEADERS += \
     Model/Parser/Analysers/SyntaticError.hpp \
     Model/Parser/Analysers/Token.hpp \
     Model/Parser/Parser.hpp \
+    View/CodeEditor/CodeEditor.hpp \
     View/AnalysisWindow.hpp \
+    View/CodeEditor/LineNumberArea.hpp \
+    View/CodeEditor/SyntaxHighlighter.hpp \
     View/MainWindow.hpp
 
 FORMS += \

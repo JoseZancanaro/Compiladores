@@ -102,7 +102,7 @@ OP_LT  : "<"
 OP_GTE : ">="
 OP_LTE : "<="
 OP_EQ  : "=="
-OP_NEQ : "/="
+OP_NEQ : "!="
 
 // 2.3 Logical
 OP_AND : "&&"

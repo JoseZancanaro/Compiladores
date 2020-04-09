@@ -9,6 +9,8 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+class CodeEditor;
+class SyntaxHighlighter;
 class AnalysisWindow;
 
 class MainWindow : public QMainWindow
@@ -32,6 +34,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    CodeEditor *codeEditor;
+    SyntaxHighlighter *syntaxHighlighter;
+
     AnalysisWindow *analysisWindow;
 
     std::optional<QString> current;

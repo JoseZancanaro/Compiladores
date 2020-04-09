@@ -1,6 +1,8 @@
 #include "MainWindow.hpp"
 #include "ui_MainWindow.h"
 
+#include "CodeEditor/CodeEditor.hpp"
+#include "CodeEditor/SyntaxHighlighter.hpp"
 #include "AnalysisWindow.hpp"
 
 #include <iostream>
@@ -14,13 +16,37 @@
 #include "Model/Parser/Parser.hpp"
 #include "Model/IO/FileHandler.hpp"
 
+namespace detail {
+    auto loadText(QString const& path) -> QString {
+        QFile file(path);
+
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream stream(&file);
+            return stream.readAll();
+        }
+
+        return {};
+    }
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , codeEditor(new CodeEditor(this))
     , analysisWindow(nullptr)
     , current({})
 {
     ui->setupUi(this);
+
+    syntaxHighlighter = new SyntaxHighlighter(codeEditor->document());
+
+    codeEditor->setFont(QFont("Consolas", 11, QFont::Normal));
+
+    ui->upperSection->addWidget(codeEditor);
+    ui->upperSection->setStretchFactor(1, 1);
+
+    auto sample = detail::loadText(":/sample/helloWorld.wpl");
+    this->codeEditor->setPlainText(sample);
 
     /* Actions */
     /* Actions: File */
@@ -48,14 +74,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::dispatchNew()
 {
-    this->ui->textEdit->clear();
+    this->codeEditor->clear();
 
-    QFile sample(":/sample/helloWorld.wpl");
-    if (sample.open(QIODevice::ReadOnly | QIODevice::Text)) {
-         QTextStream text(&sample);
-         QString content = text.readAll();
-         this->ui->textEdit->setPlainText(content);
-    }
+    auto sample = detail::loadText(":/sample/helloWorld.wpl");
+    this->codeEditor->setPlainText(sample);
 }
 
 void MainWindow::dispatchOpen()
@@ -65,7 +87,7 @@ void MainWindow::dispatchOpen()
     if (!path.isEmpty()) {
         std::string content = wpl::io::loadFromFile(path.toStdString());
 
-        this->ui->textEdit->setPlainText(QString::fromStdString(content));
+        this->codeEditor->setPlainText(QString::fromStdString(content));
         this->current = path;
     }
 }
@@ -74,7 +96,7 @@ void MainWindow::dispatchOpen()
 void MainWindow::dispatchSave()
 {
     if (this->current.has_value()) {
-        wpl::io::saveToFile(this->current.value().toStdString(), ui->textEdit->toPlainText().toStdString());
+        wpl::io::saveToFile(this->current.value().toStdString(), codeEditor->toPlainText().toStdString());
     }
     else {
         this->dispatchSaveAs();
@@ -91,7 +113,7 @@ void MainWindow::dispatchSaveAs()
             path.append(".wpl");
         }
 
-        wpl::io::saveToFile(path.toStdString(), this->ui->textEdit->toPlainText().toStdString());
+        wpl::io::saveToFile(path.toStdString(), codeEditor->toPlainText().toStdString());
 
         this->current = path;
     }
@@ -102,18 +124,11 @@ void MainWindow::dispatchQuit()
     QApplication::quit();
 }
 
-auto walk(Composite<std::string> root, std::size_t depth = 0) -> void {
-    std::cout << std::string(depth * 2, ' ') << root.value << std::endl;
-    for (auto const& c : root.children) {
-        walk(c, depth + 1);
-    }
-}
-
 void MainWindow::dispatchRun()
 {
     using namespace wpl::language;
 
-    std::string input = this->ui->textEdit->toPlainText().toStdString();
+    std::string input = this->codeEditor->toPlainText().toStdString();
     Parser parser(input);
 
     auto [errors, success, tree] = parser.parse();
