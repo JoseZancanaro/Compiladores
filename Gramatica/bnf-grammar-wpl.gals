@@ -22,7 +22,7 @@ SYM_DASH    : \-
 SYM_SLASH   : /
 SYM_VEC_MT  : \[\]
 SYM_COMM_SL : {SYM_SLASH}{SYM_SLASH}[^\n]*
-SYM_COMM_ML : {SYM_SLASH}{SYM_DASH}((\-[^/])|[^\-])*{SYM_DASH}+{SYM_SLASH}
+SYM_COMM_ML : {SYM_SLASH}{SYM_DASH}((\-+[^\-/])|[^\-])*{SYM_DASH}+{SYM_SLASH}
 
 // Identifiers
 ID_NAME : [a-zA-Z_][a-zA-Z_0-9]*
@@ -132,6 +132,8 @@ VAL_BOOL_TRUE  = ID_VAR : "true"
 VAL_BOOL_FALSE = ID_VAR : "false"
 
 // 5 Comments are ignored
+COMM_SL : {SYM_COMM_SL}
+COMM_ML : {SYM_COMM_ML}
 
 // 6 Delimiters
 DEL_ARROW  : "->"
