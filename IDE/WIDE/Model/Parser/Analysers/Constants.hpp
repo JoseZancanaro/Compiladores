@@ -71,26 +71,28 @@ enum TokenId
     t_VAL_STR = 63,
     t_VAL_BOOL_TRUE = 64,
     t_VAL_BOOL_FALSE = 65,
-    t_DEL_ARROW = 66,
-    t_DEL_PERIOD = 67,
-    t_DEL_COMMA = 68,
-    t_DEL_COLON = 69,
-    t_DEL_SEMICOLON = 70,
-    t_DEL_LP = 71,
-    t_DEL_RP = 72,
-    t_DEL_LSB = 73,
-    t_DEL_RSB = 74,
-    t_DEL_LCB = 75,
-    t_DEL_RCB = 76
+    t_COMM_SL = 66,
+    t_COMM_ML = 67,
+    t_DEL_ARROW = 68,
+    t_DEL_PERIOD = 69,
+    t_DEL_COMMA = 70,
+    t_DEL_COLON = 71,
+    t_DEL_SEMICOLON = 72,
+    t_DEL_LP = 73,
+    t_DEL_RP = 74,
+    t_DEL_LSB = 75,
+    t_DEL_RSB = 76,
+    t_DEL_LCB = 77,
+    t_DEL_RCB = 78
 };
 
-const int STATES_COUNT = 181;
+const int STATES_COUNT = 188;
 
 extern int SCANNER_TABLE[STATES_COUNT][256];
 
 extern int TOKEN_STATE[STATES_COUNT];
 
-extern int SPECIAL_CASES_INDEXES[78];
+extern int SPECIAL_CASES_INDEXES[80];
 
 extern const char *SPECIAL_CASES_KEYS[2];
 
@@ -98,7 +100,7 @@ extern int SPECIAL_CASES_VALUES[2];
 
 extern const char *SCANNER_ERROR[STATES_COUNT];
 
-const int FIRST_SEMANTIC_ACTION = 152;
+const int FIRST_SEMANTIC_ACTION = 154;
 
 const int SHIFT  = 0;
 const int REDUCE = 1;
@@ -107,11 +109,11 @@ const int ACCEPT = 3;
 const int GO_TO  = 4;
 const int ERROR  = 5;
 
-extern const int PARSER_TABLE[279][152][2];
+extern const int PARSER_TABLE[290][357][2];
 
 extern const int PRODUCTIONS[170][2];
 
-extern const char *PARSER_ERROR[279];
+extern const char *PARSER_ERROR[290];
 
 } //namespace wpl
 

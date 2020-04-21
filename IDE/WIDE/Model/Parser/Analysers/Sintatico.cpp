@@ -2,6 +2,8 @@
 
 #include "Symbols.hpp"
 
+#include <iostream>
+
 namespace wpl {
 
 void Sintatico::parse(Lexico *scanner, Semantico *semanticAnalyser)
@@ -123,6 +125,9 @@ bool Sintatico::step()
             int action = FIRST_SEMANTIC_ACTION + cmd[1] - 1;
             stack.push(PARSER_TABLE[state][action][1]);
             semanticAnalyser->executeAction(cmd[1], previousToken);
+
+            this->tree.push(std::string("#") + std::to_string(cmd[1]));
+
             return false;
         }
         case ACCEPT:

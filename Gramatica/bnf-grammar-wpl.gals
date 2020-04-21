@@ -8,7 +8,7 @@ SemanticName = Semantico
 Package = wpl
 ScannerCaseSensitive = true
 ScannerTable = Full
-Input = Stream
+Input = String
 Parser = SLR
 #RegularDefinitions
 // SYMBOLS
@@ -257,7 +257,7 @@ DEL_RCB : "}"
 // WPL
 // Context-free grammar especification
 
-<program> ::= <definition_list> ;
+<program> ::= #0000 <definition_list> #0001;
 
 <definition_list> ::= <definition> <definition_list> | î ;
 <definition> ::= <declaration> DEL_SEMICOLON | <function> ;
@@ -270,17 +270,17 @@ DEL_RCB : "}"
 
 <initialization> ::= <declaration> | <assignment> ;
 
-<declaration> ::= <type_complete> <declaration_name_list> ;
+<declaration> ::= <type_complete> <declaration_name_list> #0202 ;
 <declaration_name_list> ::= <declaration_name> DEL_COMMA <declaration_name_list> | <declaration_name> ;
-<declaration_name> ::= ID_VAR OP_ATT <expression> | ID_VAR ;
+<declaration_name> ::= ID_VAR #0200 OP_ATT <expression> #0201 | ID_VAR #0200 ;
 
 // Typename [vector modifier, ...] [pointer] [const]
-<type_complete> ::= <type> <type_modifier> ;
+<type_complete> ::= <type> #0100 <type_modifier> ;
 <type> ::= KW_VOID | KW_INT | KW_FLOAT | KW_DOUBLE | KW_BOOL | KW_CHAR | KW_STR | KW_ANY ;
 <type_modifier> ::= <type_modifier_vector> <type_modifier_const> <type_modifier_pointer> ;
-<type_modifier_vector> ::= KW_VECTOR <type_modifier_vector> | DEL_LSB <literal_primitive> DEL_RSB <type_modifier_vector> | î ;
-<type_modifier_const> ::= KW_CONST | î ;
-<type_modifier_pointer> ::= OP_MULT <type_modifier_pointer> | î ;
+<type_modifier_vector> ::= KW_VECTOR #0101 <type_modifier_vector> | DEL_LSB #0102 <literal_primitive> #0103 DEL_RSB <type_modifier_vector> | î ;
+<type_modifier_const> ::= KW_CONST #0104 | î ;
+<type_modifier_pointer> ::= OP_MULT #0105 <type_modifier_pointer> | î ;
 
 // Contant values, vector constructor
 <literal> ::= <literal_primitive> | <vector_constructor> ;
