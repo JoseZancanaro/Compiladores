@@ -1,6 +1,6 @@
 #include "Parser.hpp"
 
-#include <sstream>
+#include <iostream>
 
 namespace wpl::language {
 

@@ -8,7 +8,7 @@ SemanticName = Semantico
 Package = wpl
 ScannerCaseSensitive = true
 ScannerTable = Full
-Input = String
+Input = Stream
 Parser = SLR
 #RegularDefinitions
 // SYMBOLS
@@ -225,11 +225,13 @@ DEL_RCB : "}"
 
 <function>
 <function_name>
+<function_arg_list_guard>
 <function_arg_list>
 <function_arg>
 <function_return>
 
 <function_call>
+<function_call_arg_list_guard>
 <function_call_arg_list>
 <function_call_arg>
 
@@ -288,7 +290,7 @@ DEL_RCB : "}"
 
 <vector_constructor> ::= DEL_LSB <vector_constructor_values> DEL_RSB | KW_VECTOR;
 <vector_constructor_values> ::= <expression> DEL_COMMA <vector_constructor_values> | <expression> ;
-<vector_child> ::= ID_VAR DEL_LSB <expression> DEL_RSB ;
+<vector_child> ::= ID_VAR #1102 DEL_LSB <expression> DEL_RSB ;
 
 <assignment_list> ::= <assignment> DEL_COMMA <assignment_list> | <assignment> ;
 <assignment> ::= ID_VAR OP_ATT <expression> | <assignment_vector_sub> ;
@@ -334,13 +336,15 @@ DEL_RCB : "}"
 <break> ::= KW_BREAK ;
 
 // Subroutines: function definition
-<function> ::= KW_DEF <function_name> DEL_LP <function_arg_list> DEL_RP DEL_ARROW <type_complete> <scope> ;
+<function> ::= KW_DEF <function_name> #0300 #0002 DEL_LP <function_arg_list_guard> DEL_RP DEL_ARROW <type_complete> #0301 <scope> #0003 ;
 <function_name> ::= ID_VAR | ID_FUNC | KW_FN_RESERVED ;
-<function_arg_list> ::= <function_arg> DEL_COMMA <function_arg_list> | <function_arg> | î ;
-<function_arg> ::= <type_complete> ID_VAR ;
+<function_arg_list_guard> ::= <function_arg_list> | î ;
+<function_arg_list> ::= <function_arg> DEL_COMMA <function_arg_list> | <function_arg> ;
+<function_arg> ::= <type_complete> ID_VAR #0302 ;	
 <function_return> ::= KW_RETURN <expression> ;
 
-<function_call> ::= <function_name> DEL_LP <function_call_arg_list> DEL_RP | <function_name> DEL_LP DEL_RP ;
+<function_call> ::= <function_name> #1101 DEL_LP <function_call_arg_list_guard> DEL_RP ;
+<function_call_arg_list_guard> ::= <function_call_arg_list> | î ;
 <function_call_arg_list> ::= <function_call_arg> DEL_COMMA <function_call_arg_list> | <function_call_arg> ;
 <function_call_arg> ::= <expression> ;
 
@@ -381,4 +385,4 @@ DEL_RCB : "}"
 		     <value> OP_INC | <value>     OP_DEC   |
 		     <value> ;
 
-<value> ::= ID_VAR | <function_call> | <vector_child> | <literal> | DEL_LP <precedence_tree> DEL_RP ;
+<value> ::= ID_VAR #1100 | <function_call> | <vector_child> | <literal> | DEL_LP <precedence_tree> DEL_RP ;

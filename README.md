@@ -185,3 +185,16 @@ Double[] vetor;
 - Os escopos são delimitados por chaves ({ ... }).
 - Vírgulas são utilizadas para separar parâmetros de função, valores em vetores e nomes em declarações de variáveis.
 - O operador de '.' acessa um membro de um struct.
+
+## Semântico
+
+### Categoria de Ações
+
+| Prefixo | Categoria |
+| -- | -- |
+| 00 | Escopo |
+| 01 | Tipo |
+| 02 | Declaração |
+| 03 | Função |
+| 11 | Controle de Leitura |
+
