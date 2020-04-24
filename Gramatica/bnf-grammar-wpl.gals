@@ -165,7 +165,8 @@ DEL_RCB : "}"
 <statement_list>
 
 <statement>
-<scope>
+<scope_explicit>
+<scope_owned>
 
 <initialization>
 
@@ -267,14 +268,16 @@ DEL_RCB : "}"
 <statement_list> ::= <statement> <statement_list> | î ;
 
 // Scope statement, selection statement, loop statement, expression statement, declaration statement, assignment statement, function return statement, break statement
-<statement> ::= <scope> | <selection> | <loop> | <expression> DEL_SEMICOLON | <declaration> DEL_SEMICOLON | <function_return> DEL_SEMICOLON | <break> DEL_SEMICOLON ;
-<scope> ::= #0002 DEL_LCB <statement_list> DEL_RCB #0003 ;
+<statement> ::= <scope_explicit> | <selection> | <loop> | <expression> DEL_SEMICOLON | <declaration> DEL_SEMICOLON | <function_return> DEL_SEMICOLON | <break> DEL_SEMICOLON ;
+
+<scope_explicit> ::= DEL_LCB #0002 <statement_list> #0003 DEL_RCB ;
+<scope_owned> ::= DEL_LCB <statement_list> DEL_RCB ;
 
 <initialization> ::= <declaration> | <assignment> ;
 
-<declaration> ::= <type_complete> <declaration_name_list> #0203 ;
+<declaration> ::= <type_complete> <declaration_name_list> #0202 ;
 <declaration_name_list> ::= <declaration_name> DEL_COMMA <declaration_name_list> | <declaration_name> ;
-<declaration_name> ::= ID_VAR #0200 OP_ATT <expression> #0201 | ID_VAR #0200 #0202 ;
+<declaration_name> ::= ID_VAR #0200 OP_ATT <expression> #0201 | ID_VAR #0200 ;
 
 // Typename [vector modifier, ...] [pointer] [const]
 <type_complete> ::= <type> #0100 <type_modifier> ;
@@ -325,8 +328,8 @@ DEL_RCB : "}"
 <selection_case_opt> ::= KW_PIPE <literal> DEL_ARROW <statement> ;
 <selection_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <statement> ;
 
-<selection_if> ::= KW_IF #0002 DEL_LP <expression> DEL_RP <scope> | KW_IF #0002 DEL_LP <expression> DEL_RP <scope> <selection_if_else> ;
-<selection_if_else> ::= KW_ELSE <statement> ; 
+<selection_if> ::= KW_IF #0002 DEL_LP <expression> DEL_RP <scope_owned> #0003 | KW_IF #0002 DEL_LP <expression> DEL_RP <scope_owned> <selection_if_else> #0003 ;
+<selection_if_else> ::= KW_ELSE #0002 <statement> #0003 ; 
 
 <selection_switch> ::= KW_SWITCH #0002 DEL_LP <expression> DEL_RP DEL_LCB <selection_switch_case_list> DEL_RCB #0003 ;
 <selection_switch_case_list> ::= <selection_switch_case> <selection_switch_case_list> | <selection_switch_case> | <selection_switch_otherwise> ;
@@ -336,7 +339,7 @@ DEL_RCB : "}"
 <break> ::= KW_BREAK ;
 
 // Subroutines: function definition
-<function> ::= KW_DEF <function_name> #0300 #0002 DEL_LP <function_arg_list_guard> DEL_RP DEL_ARROW <type_complete> #0301 <scope> #0003 ;
+<function> ::= KW_DEF <function_name> #0300 #0002 DEL_LP <function_arg_list_guard> DEL_RP DEL_ARROW <type_complete> #0301 <scope_owned> #0003 ;
 <function_name> ::= ID_VAR | ID_FUNC | KW_FN_RESERVED ;
 <function_arg_list_guard> ::= <function_arg_list> | î ;
 <function_arg_list> ::= <function_arg> DEL_COMMA <function_arg_list> | <function_arg> ;
