@@ -268,13 +268,13 @@ DEL_RCB : "}"
 
 // Scope statement, selection statement, loop statement, expression statement, declaration statement, assignment statement, function return statement, break statement
 <statement> ::= <scope> | <selection> | <loop> | <expression> DEL_SEMICOLON | <declaration> DEL_SEMICOLON | <function_return> DEL_SEMICOLON | <break> DEL_SEMICOLON ;
-<scope> ::= DEL_LCB <statement_list> DEL_RCB ;
+<scope> ::= #0002 DEL_LCB <statement_list> DEL_RCB #0003 ;
 
 <initialization> ::= <declaration> | <assignment> ;
 
-<declaration> ::= <type_complete> <declaration_name_list> #0202 ;
+<declaration> ::= <type_complete> <declaration_name_list> #0203 ;
 <declaration_name_list> ::= <declaration_name> DEL_COMMA <declaration_name_list> | <declaration_name> ;
-<declaration_name> ::= ID_VAR #0200 OP_ATT <expression> #0201 | ID_VAR #0200 ;
+<declaration_name> ::= ID_VAR #0200 OP_ATT <expression> #0201 | ID_VAR #0200 #0202 ;
 
 // Typename [vector modifier, ...] [pointer] [const]
 <type_complete> ::= <type> #0100 <type_modifier> ;
@@ -299,21 +299,21 @@ DEL_RCB : "}"
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
 
-<loop_while> ::= KW_WHILE DEL_LP <expression> DEL_RP <statement> ;
+<loop_while> ::= KW_WHILE #0002 DEL_LP <expression> DEL_RP <statement> #0003 ;
 
-<loop_do_while> ::= KW_DO <statement> KW_WHILE DEL_LP <expression> DEL_RP ;
+<loop_do_while> ::= KW_DO #0002 <statement> KW_WHILE DEL_LP <expression> DEL_RP #0003 ;
 
-<loop_for> ::= KW_FOR DEL_LP <loop_for_args> DEL_RP <statement> ;
+<loop_for> ::= KW_FOR #0002 DEL_LP <loop_for_args> DEL_RP <statement> #0003 ;
 <loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
 <loop_for_args_init> ::= <initialization> | î ;
 <loop_for_args_test> ::= <expression> | î ;
 <loop_for_args_op> ::= <expression_list> | î ;
 
-<loop_range_for> ::= KW_FOR DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <statement> ;
+<loop_range_for> ::= KW_FOR #0002 DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <statement> #0003 ;
 <loop_range_for_declaration> ::= <type_complete> ID_VAR | ID_VAR ;
 
 // Selection Branches: choose-from, case-of, if-then-else, switch-case
-<selection> ::= <selection_choose> | <selection_if> | <selection_switch> ; // | <selection_case>
+<selection> ::= <selection_if> | <selection_switch> ; // | <selection_case> | <selection_choose>
 
 <selection_choose> ::= KW_CHOOSE DEL_LCB <selection_choose_opt_list> DEL_RCB ;
 <selection_choose_opt_list> ::= <selection_choose_opt> <selection_choose_opt_list> | <selection_choose_opt> | <selection_choose_otherwise> ;
@@ -325,10 +325,10 @@ DEL_RCB : "}"
 <selection_case_opt> ::= KW_PIPE <literal> DEL_ARROW <statement> ;
 <selection_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <statement> ;
 
-<selection_if> ::= KW_IF DEL_LP <expression> DEL_RP <scope> | KW_IF DEL_LP <expression> DEL_RP <scope> <selection_if_else> ;
+<selection_if> ::= KW_IF #0002 DEL_LP <expression> DEL_RP <scope> | KW_IF #0002 DEL_LP <expression> DEL_RP <scope> <selection_if_else> ;
 <selection_if_else> ::= KW_ELSE <statement> ; 
 
-<selection_switch> ::= KW_SWITCH DEL_LP <expression> DEL_RP DEL_LCB <selection_switch_case_list> DEL_RCB ;
+<selection_switch> ::= KW_SWITCH #0002 DEL_LP <expression> DEL_RP DEL_LCB <selection_switch_case_list> DEL_RCB #0003 ;
 <selection_switch_case_list> ::= <selection_switch_case> <selection_switch_case_list> | <selection_switch_case> | <selection_switch_otherwise> ;
 <selection_switch_case> ::= KW_CASE <expression> DEL_COLON <statement_list> ;
 <selection_switch_otherwise> ::= KW_OTHERWISE DEL_COLON <statement_list> ;

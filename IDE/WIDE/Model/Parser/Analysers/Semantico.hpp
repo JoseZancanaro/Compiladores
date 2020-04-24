@@ -11,7 +11,8 @@
 
 namespace wpl {
 
-enum Type {
+enum class Type {
+    UNKNOWN,
     VOID,
     INTEGER,
     FLOAT,
@@ -41,20 +42,20 @@ struct Name {
     bool constant {};
 };
 
-using NameTable = std::vector<Name>;
+using Name_Table = std::vector<Name>;
 
-auto getTypeName(Type const& type) -> std::string;
-auto getType(std::string const& type) -> Type;
+auto get_type_name(Type const& type) -> std::string;
+auto get_type(std::string const& type) -> Type;
 
 class Semantico
 {
 public:
     std::size_t scope_count {};
-    NameTable name_table {};
+    Name_Table name_table {};
 
     std::stack<std::size_t> scopes {};
     std::stack<std::string> types {};
-    std::stack<std::pair<std::string, std::size_t>> names {};
+    std::stack<Name> names {};
 
     auto execute_action(int action, Token const* token) -> void;
 
