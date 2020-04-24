@@ -113,7 +113,8 @@ auto Semantico::do_scope_action(int suffix, [[maybe_unused]] Token const* token)
 
 auto Semantico::do_type_action(int suffix, Token const* token) -> void {
     enum class Type_Suffix {
-        PUSH_TYPENAME = 0
+        PUSH_TYPENAME = 0,
+
     };
 
     switch (Type_Suffix(suffix)) {
@@ -135,10 +136,11 @@ auto Semantico::do_declare_action(int suffix, Token const* token) -> void {
     switch (Declare_Suffix(suffix)) {
         case Declare_Suffix::PUSH_NAME_ID: {
             this->names.push({ this->scopes.top(), token->getLexeme(), this->types.top(), this->types.top() });
+
             break;
         }
         case Declare_Suffix::PUSH_INITIALIZED: {
-            auto name = this->names.top();
+            auto name = this->names.top(); this->names.pop();
             name.initialized = true;
 
             //@TODO check type
@@ -148,7 +150,7 @@ auto Semantico::do_declare_action(int suffix, Token const* token) -> void {
             break;
         }
         case Declare_Suffix::PUSH_UNINITIALIZED: {
-            auto name = this->names.top();
+            auto name = this->names.top(); this->names.pop();
             this->try_put_name(name);
 
             break;

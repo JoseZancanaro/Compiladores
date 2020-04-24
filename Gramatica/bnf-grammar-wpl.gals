@@ -179,6 +179,7 @@ DEL_RCB : "}"
 <type_modifier>
 <type_modifier_vector>
 <type_modifier_const>
+<type_modifier_ref>
 <type_modifier_pointer>
 
 <literal>
@@ -275,17 +276,18 @@ DEL_RCB : "}"
 
 <initialization> ::= <declaration> | <assignment> ;
 
-<declaration> ::= <type_complete> <declaration_name_list> #0202 ;
+<declaration> ::= <type_complete> <declaration_name_list> #0203 ;
 <declaration_name_list> ::= <declaration_name> DEL_COMMA <declaration_name_list> | <declaration_name> ;
-<declaration_name> ::= ID_VAR #0200 OP_ATT <expression> #0201 | ID_VAR #0200 ;
+<declaration_name> ::= ID_VAR #0200 OP_ATT <expression> #0201 | ID_VAR #0200 #0202 ;
 
 // Typename [vector modifier, ...] [pointer] [const]
 <type_complete> ::= <type> #0100 <type_modifier> ;
 <type> ::= KW_VOID | KW_INT | KW_FLOAT | KW_DOUBLE | KW_BOOL | KW_CHAR | KW_STR | KW_ANY ;
-<type_modifier> ::= <type_modifier_vector> <type_modifier_const> <type_modifier_pointer> ;
+<type_modifier> ::= <type_modifier_vector> <type_modifier_const> <type_modifier_ref> <type_modifier_pointer> ;
 <type_modifier_vector> ::= KW_VECTOR #0101 <type_modifier_vector> | DEL_LSB #0102 <literal_primitive> #0103 DEL_RSB <type_modifier_vector> | î ;
 <type_modifier_const> ::= KW_CONST #0104 | î ;
-<type_modifier_pointer> ::= OP_MULT #0105 <type_modifier_pointer> | î ;
+<type_modifier_ref> ::= OP_BW_AND #0105 | î ;
+<type_modifier_pointer> ::= OP_MULT #0106 <type_modifier_pointer> | î ;
 
 // Contant values, vector constructor
 <literal> ::= <literal_primitive> | <vector_constructor> ;
