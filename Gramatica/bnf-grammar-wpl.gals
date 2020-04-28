@@ -263,13 +263,13 @@ DEL_RCB : "}"
 
 <program> ::= #0000 <definition_list> #0001;
 
-<definition_list> ::= <definition> <definition_list> | î ;
+<definition_list> ::= <definition> <definition_list> | Ã® ;
 <definition> ::= <declaration> DEL_SEMICOLON | <function> ;
 
-<statement_list> ::= <statement> <statement_list> | î ;
+<statement_list> ::= <statement> <statement_list> | Ã® ;
 
-// Scope statement, selection statement, loop statement, expression statement, declaration statement, assignment statement, function return statement, break statement
-<statement> ::= <scope_explicit> | <selection> | <loop> | <expression> DEL_SEMICOLON | <declaration> DEL_SEMICOLON | <function_return> DEL_SEMICOLON | <break> DEL_SEMICOLON ;
+// Scope statement, selection statement, loop statement, expression statement, (declaration statement, assignment statement), function return statement, break statement
+<statement> ::= <scope_explicit> | <selection> | <loop> | <expression> DEL_SEMICOLON | <initialization> DEL_SEMICOLON | <function_return> DEL_SEMICOLON | <break> DEL_SEMICOLON ;
 
 <scope_explicit> ::= DEL_LCB #0002 <statement_list> #0003 DEL_RCB ;
 <scope_owned> ::= DEL_LCB <statement_list> DEL_RCB ;
@@ -284,10 +284,10 @@ DEL_RCB : "}"
 <type_complete> ::= <type> #0100 <type_modifier> ;
 <type> ::= KW_VOID | KW_INT | KW_FLOAT | KW_DOUBLE | KW_BOOL | KW_CHAR | KW_STR | KW_ANY ;
 <type_modifier> ::= <type_modifier_vector> <type_modifier_const> <type_modifier_ref> <type_modifier_pointer> ;
-<type_modifier_vector> ::= KW_VECTOR #0101 <type_modifier_vector> | DEL_LSB #0102 <literal_primitive> #0103 DEL_RSB <type_modifier_vector> | î ;
-<type_modifier_const> ::= KW_CONST #0104 | î ;
-<type_modifier_ref> ::= OP_BW_AND #0105 | î ;
-<type_modifier_pointer> ::= OP_MULT #0106 <type_modifier_pointer> | î ;
+<type_modifier_vector> ::= KW_VECTOR #0101 <type_modifier_vector> | DEL_LSB #0102 <literal_primitive> #0103 DEL_RSB <type_modifier_vector> | Ã® ;
+<type_modifier_const> ::= KW_CONST #0104 | Ã® ;
+<type_modifier_ref> ::= OP_BW_AND #0105 | Ã® ;
+<type_modifier_pointer> ::= OP_MULT #0106 <type_modifier_pointer> | Ã® ;
 
 // Contant values, vector constructor
 <literal> ::= <literal_primitive> | <vector_constructor> ;
@@ -298,8 +298,8 @@ DEL_RCB : "}"
 <vector_child> ::= ID_VAR #1102 DEL_LSB <expression> DEL_RSB ;
 
 <assignment_list> ::= <assignment> DEL_COMMA <assignment_list> | <assignment> ;
-<assignment> ::= ID_VAR OP_ATT <expression> | <assignment_vector_sub> ;
-<assignment_vector_sub> ::= ID_VAR DEL_LSB <expression> DEL_RSB OP_ATT <expression> ;
+<assignment> ::= ID_VAR #0400 OP_ATT <expression> #0401 | <assignment_vector_sub> ;
+<assignment_vector_sub> ::= ID_VAR #0402 DEL_LSB <expression> #0403 DEL_RSB OP_ATT <expression> #0404 ;
 
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
@@ -310,9 +310,9 @@ DEL_RCB : "}"
 
 <loop_for> ::= KW_FOR #0002 DEL_LP <loop_for_args> DEL_RP <statement> #0003 ;
 <loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
-<loop_for_args_init> ::= <initialization> | î ;
-<loop_for_args_test> ::= <expression> | î ;
-<loop_for_args_op> ::= <expression_list> | î ;
+<loop_for_args_init> ::= <initialization> | Ã® ;
+<loop_for_args_test> ::= <expression> | Ã® ;
+<loop_for_args_op> ::= <expression_list> | Ã® ;
 
 <loop_range_for> ::= KW_FOR #0002 DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <statement> #0003 ;
 <loop_range_for_declaration> ::= <type_complete> ID_VAR | ID_VAR ;
@@ -343,28 +343,28 @@ DEL_RCB : "}"
 // Subroutines: function definition
 <function> ::= KW_DEF <function_name> #0300 #0002 DEL_LP <function_arg_list_guard> DEL_RP DEL_ARROW <type_complete> #0301 <scope_owned> #0003 ;
 <function_name> ::= ID_VAR | ID_FUNC | KW_FN_RESERVED ;
-<function_arg_list_guard> ::= <function_arg_list> | î ;
+<function_arg_list_guard> ::= <function_arg_list> | Ã® ;
 <function_arg_list> ::= <function_arg> DEL_COMMA <function_arg_list> | <function_arg> ;
 <function_arg> ::= <type_complete> ID_VAR #0302 ;	
 <function_return> ::= KW_RETURN <expression> ;
 
 <function_call> ::= <function_name> #1101 DEL_LP <function_call_arg_list_guard> DEL_RP ;
-<function_call_arg_list_guard> ::= <function_call_arg_list> | î ;
-<function_call_arg_list> ::= <function_call_arg> DEL_COMMA <function_call_arg_list> | <function_call_arg> ;
+<function_call_arg_list_guard> ::= <function_call_arg_list> | Ã® ; <function_call_arg_list> ::= <function_call_arg> DEL_COMMA <function_call_arg_list> | <function_call_arg> ;
 <function_call_arg> ::= <expression> ;
 
 // Expression and operator precedence tree
 <expression_list> ::= <expression> DEL_COMMA <expression_list> | <expression> ;
 <expression> ::= <precedence_tree> ;
 
-<precedence_tree> ::= <precedence_l13> ;
+<precedence_tree> ::= <precedence_l12> ;
 
-<precedence_l13> ::= <precedence_l13> OP_ATT      <precedence_l12> |                        // = += -+ *= /= %=
-                       <precedence_l13> OP_ATT_ADD  <precedence_l12> |
-		     <precedence_l13> OP_ATT_SUB  <precedence_l12> |
-		     <precedence_l13> OP_ATT_MULT <precedence_l12> |
-		     <precedence_l13> OP_ATT_DIV  <precedence_l12> |
-		     <precedence_l13> OP_ATT_REM   <precedence_l12> | <precedence_l12> ;
+<precedence_l13> ::= Ã® ;
+		  // <precedence_l13> OP_ATT      <precedence_l12> |                        // = += -+ *= /= %=
+                    // <precedence_l13> OP_ATT_ADD  <precedence_l12> |
+		  // <precedence_l13> OP_ATT_SUB  <precedence_l12> |
+		  // <precedence_l13> OP_ATT_MULT <precedence_l12> |
+		  // <precedence_l13> OP_ATT_DIV  <precedence_l12> |
+		  // <precedence_l13> OP_ATT_REM   <precedence_l12> | <precedence_l12> ;
 <precedence_l12> ::= <precedence_l12> OP_OR       <precedence_l11> | <precedence_l11> ;	// ||
 <precedence_l11> ::= <precedence_l11> OP_AND      <precedence_l10> | <precedence_l10> ;	// &&
 <precedence_l10> ::= <precedence_l10> OP_BW_OR    <precedence_l09> | <precedence_l09> ;	// |

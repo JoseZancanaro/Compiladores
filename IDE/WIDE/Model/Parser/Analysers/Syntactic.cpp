@@ -1,4 +1,4 @@
-#include "Sintatico.hpp"
+#include "Syntactic.hpp"
 
 #include "Symbols.hpp"
 
@@ -6,10 +6,10 @@
 
 namespace wpl {
 
-void Sintatico::parse(Lexico *scanner, Semantico *semanticAnalyser)
+void Syntactic::parse(Lexical *scanner, Semantic *semanticAnalyser)
 {
     this->scanner = scanner;
-    this->semanticAnalyser = semanticAnalyser;
+    this->semantic_analyser = semanticAnalyser;
 
     //Limpa a pilha
     while (! stack.empty())
@@ -17,25 +17,25 @@ void Sintatico::parse(Lexico *scanner, Semantico *semanticAnalyser)
 
     stack.push(0);
 
-    if (previousToken != 0 && previousToken != currentToken)
-        delete previousToken;
-    previousToken = 0;
+    if (previous_token != 0 && previous_token != current_token)
+        delete previous_token;
+    previous_token = 0;
 
-    if (currentToken != 0)
-        delete currentToken;
-    currentToken = scanner->nextToken();
+    if (current_token != 0)
+        delete current_token;
+    current_token = scanner->next_token();
 
     while ( ! step() )
         ;
 }
 
 // Custom error report :)
-SyntaticError Sintatico::createDetailedError(int state, Token* token) const
+Syntatic_Error Syntactic::create_detailed_error(int state, Token* token) const
 {
     auto error = std::string("Error at state ") + std::to_string(state);
 
-    auto pair = std::string(" (") + std::to_string(token->getPosition())
-                    + ", " + token->getLexeme() + "): ";
+    auto pair = std::string(" (") + std::to_string(token->get_position())
+                    + ", " + token->get_lexeme() + "): ";
 
     auto productions = PARSER_TABLE[state];
     auto const qty = sizeof(symbols) / sizeof(symbols[0]);
@@ -60,21 +60,21 @@ SyntaticError Sintatico::createDetailedError(int state, Token* token) const
         buffer += expected.at(0) + ".";
     }
 
-    return SyntaticError(error + pair + buffer, token->getPosition());
+    return Syntatic_Error(error + pair + buffer, token->get_position());
 }
 
-bool Sintatico::step()
+bool Syntactic::step()
 {
-    if (currentToken == 0) //Fim de Sentença
+    if (current_token == 0) //Fim de Sentença
     {
         int pos = 0;
-        if (previousToken != 0)
-            pos = previousToken->getPosition() + previousToken->getLexeme().size();
+        if (previous_token != 0)
+            pos = previous_token->get_position() + previous_token->get_lexeme().size();
 
-        currentToken = new Token(DOLLAR, "$", pos);
+        current_token = new Token(DOLLAR, "$", pos);
     }
 
-    int token = currentToken->getId();
+    int token = current_token->get_id();
     int state = stack.top();
 
     const int* cmd = PARSER_TABLE[state][token-1];
@@ -84,13 +84,13 @@ bool Sintatico::step()
         case SHIFT:
         {
             stack.push(cmd[1]);
-            if (previousToken != 0)
-                delete previousToken;
+            if (previous_token != 0)
+                delete previous_token;
 
-            this->tree.push(Composite(std::string(symbols[currentToken->getId()]) + " : " + currentToken->getLexeme()));
+            this->tree.push(Composite(std::string(symbols[current_token->get_id()]) + " : " + current_token->get_lexeme()));
 
-            previousToken = currentToken;
-            currentToken = scanner->nextToken();
+            previous_token = current_token;
+            current_token = scanner->next_token();
             return false;
         }
         case REDUCE:
@@ -124,7 +124,7 @@ bool Sintatico::step()
         {
             int action = FIRST_SEMANTIC_ACTION + cmd[1] - 1;
             stack.push(PARSER_TABLE[state][action][1]);
-            semanticAnalyser->execute_action(cmd[1], previousToken);
+            semantic_analyser->execute_action(cmd[1], previous_token);
 
             this->tree.push(std::string("#") + std::to_string(cmd[1]));
 
@@ -134,12 +134,12 @@ bool Sintatico::step()
             return true;
 
         case ERROR:
-            throw createDetailedError(state, currentToken);
+            throw create_detailed_error(state, current_token);
     }
     return false;
 }
 
-std::stack<Composite<std::string>> Sintatico::getTree() const
+std::stack<Composite<std::string>> Syntactic::get_tree() const
 {
     return this->tree;
 }

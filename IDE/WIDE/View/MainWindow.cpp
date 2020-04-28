@@ -4,6 +4,7 @@
 #include "CodeEditor/CodeEditor.hpp"
 #include "CodeEditor/SyntaxHighlighter.hpp"
 #include "AnalysisWindow.hpp"
+#include "NameTableWindow.hpp"
 
 #include <iostream>
 
@@ -29,11 +30,12 @@ namespace detail {
     }
 }
 
-MainWindow::MainWindow(QWidget *parent)
+Main_Window::Main_Window(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , codeEditor(new CodeEditor(this))
     , analysisWindow(nullptr)
+    , name_table_window(nullptr)
     , current({})
 {
     ui->setupUi(this);
@@ -61,18 +63,19 @@ MainWindow::MainWindow(QWidget *parent)
 
     /* Actions: Tools */
     connect(ui->actionCodeAnalysis, SIGNAL(triggered(bool)), this, SLOT(dispatchCodeAnalysis()));
+    connect(ui->action_names_view, SIGNAL(triggered(bool)), this, SLOT(dispatch_names_view()));
 
 
     /* Buttons */
     connect(ui->btnRun, SIGNAL(clicked(bool)), this, SLOT(dispatchRun()));
 }
 
-MainWindow::~MainWindow()
+Main_Window::~Main_Window()
 {
     delete ui;
 }
 
-void MainWindow::dispatchNew()
+void Main_Window::dispatchNew()
 {
     this->codeEditor->clear();
 
@@ -80,7 +83,7 @@ void MainWindow::dispatchNew()
     this->codeEditor->setPlainText(sample);
 }
 
-void MainWindow::dispatchOpen()
+void Main_Window::dispatchOpen()
 {
     QString path = QFileDialog::getOpenFileName(this, QString("Open file"));
 
@@ -93,7 +96,7 @@ void MainWindow::dispatchOpen()
 }
 
 
-void MainWindow::dispatchSave()
+void Main_Window::dispatchSave()
 {
     if (this->current.has_value()) {
         wpl::io::saveToFile(this->current.value().toStdString(), codeEditor->toPlainText().toStdString());
@@ -103,7 +106,7 @@ void MainWindow::dispatchSave()
     }
 }
 
-void MainWindow::dispatchSaveAs()
+void Main_Window::dispatchSaveAs()
 {
     QString path = QFileDialog::getSaveFileName(this, QString("Save file as"));
 
@@ -119,24 +122,24 @@ void MainWindow::dispatchSaveAs()
     }
 }
 
-void MainWindow::dispatchQuit()
+void Main_Window::dispatchQuit()
 {
     QApplication::quit();
 }
 
-void MainWindow::dispatchRun()
+void Main_Window::dispatchRun()
 {
     using namespace wpl::language;
 
     std::string input = this->codeEditor->toPlainText().toStdString();
     Parser parser(input);
 
-    auto [errors, success, tree] = parser.parse();
+    auto [errors, success, tree, names] = parser.parse();
 
     this->ui->listErrors->clear();
 
     for (auto const& e : errors) {
-        this->ui->listErrors->addItem(QString(e.getMessage()));
+        this->ui->listErrors->addItem(QString(e.get_message()));
     }
 
     auto [color, message] = [status = success](){
@@ -148,16 +151,20 @@ void MainWindow::dispatchRun()
     }();
 
     this->ui->textOut->setTextColor(color);
-    this->ui->textOut->append(message);
+    this->ui->textOut->setText(message);
 
     this->ui->tabWidget->setCurrentIndex(Tabs::COMPILER_OUTPUT);
 
     if (this->analysisWindow) {
         this->analysisWindow->setTree(tree.value_or(Composite<std::string>("<invalid>")));
     }
+
+    if (this->name_table_window) {
+        this->name_table_window->set_name_table(names);
+    }
 }
 
-void MainWindow::dispatchCodeAnalysis()
+void Main_Window::dispatchCodeAnalysis()
 {
     if (this->analysisWindow) {
         this->analysisWindow->setHidden(false);
@@ -166,5 +173,17 @@ void MainWindow::dispatchCodeAnalysis()
     else {
         this->analysisWindow = new AnalysisWindow(this);
         this->analysisWindow->show();
+    }
+}
+
+void Main_Window::dispatch_names_view()
+{
+    if (this->name_table_window) {
+        this->name_table_window->setHidden(false);
+        this->name_table_window->activateWindow();
+    }
+    else {
+        this->name_table_window = new Name_Table_Window(this);
+        this->name_table_window->show();
     }
 }

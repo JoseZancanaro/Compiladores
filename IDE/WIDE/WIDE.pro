@@ -19,15 +19,16 @@ SOURCES += \
     Control/AppControl.cpp \
     Model/IO/FileHandler.cpp \
     Model/Parser/Analysers/Constants.cpp \
-    Model/Parser/Analysers/Lexico.cpp \
-    Model/Parser/Analysers/Semantico.cpp \
-    Model/Parser/Analysers/Sintatico.cpp \
+    Model/Parser/Analysers/Lexical.cpp \
+    Model/Parser/Analysers/Semantic.cpp \
+    Model/Parser/Analysers/Syntactic.cpp \
     Model/Parser/Parser.cpp \
     View/CodeEditor/CodeEditor.cpp \
     View/AnalysisWindow.cpp \
     View/CodeEditor/LineNumberArea.cpp \
     View/CodeEditor/SyntaxHighlighter.cpp \
     View/MainWindow.cpp \
+    View/NameTableWindow.cpp \
     main.cpp
 
 HEADERS += \
@@ -36,12 +37,12 @@ HEADERS += \
     Model/IO/FileHandler.hpp \
     Model/Parser/Analysers/AnalysisError.hpp \
     Model/Parser/Analysers/Constants.hpp \
+    Model/Parser/Analysers/Lexical.hpp \
     Model/Parser/Analysers/LexicalError.hpp \
-    Model/Parser/Analysers/Lexico.hpp \
+    Model/Parser/Analysers/Semantic.hpp \
     Model/Parser/Analysers/SemanticError.hpp \
-    Model/Parser/Analysers/Semantico.hpp \
-    Model/Parser/Analysers/Sintatico.hpp \
     Model/Parser/Analysers/Symbols.hpp \
+    Model/Parser/Analysers/Syntactic.hpp \
     Model/Parser/Analysers/SyntaticError.hpp \
     Model/Parser/Analysers/Token.hpp \
     Model/Parser/Parser.hpp \
@@ -49,11 +50,13 @@ HEADERS += \
     View/AnalysisWindow.hpp \
     View/CodeEditor/LineNumberArea.hpp \
     View/CodeEditor/SyntaxHighlighter.hpp \
-    View/MainWindow.hpp
+    View/MainWindow.hpp \
+    View/NameTableWindow.hpp
 
 FORMS += \
     View/AnalysisWindow.ui \
-    View/MainWindow.ui
+    View/MainWindow.ui \
+    View/NameTableWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

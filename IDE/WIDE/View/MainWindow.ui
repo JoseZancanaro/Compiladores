@@ -141,7 +141,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tabErrors">
            <attribute name="title">
@@ -289,6 +289,7 @@
      <string>Tools</string>
     </property>
     <addaction name="actionCodeAnalysis"/>
+    <addaction name="action_names_view"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -383,6 +384,11 @@
   <action name="actionSaveAs">
    <property name="text">
     <string>Save As</string>
+   </property>
+  </action>
+  <action name="action_names_view">
+   <property name="text">
+    <string>Name Table</string>
    </property>
   </action>
  </widget>

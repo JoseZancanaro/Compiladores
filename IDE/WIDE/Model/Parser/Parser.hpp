@@ -5,31 +5,32 @@
 #include <string>
 #include <vector>
 
-#include "Analysers/Lexico.hpp"
-#include "Analysers/Sintatico.hpp"
-#include "Analysers/Semantico.hpp"
+#include "Analysers/Lexical.hpp"
+#include "Analysers/Syntactic.hpp"
+#include "Analysers/Semantic.hpp"
 #include "../Composite.hpp"
 
 namespace wpl::language {
 
 class Parser
 {
-    wpl::Lexico lex;
-    wpl::Sintatico syntactic;
-    wpl::Semantico semantic;
+    wpl::Lexical lex;
+    wpl::Syntactic syntactic;
+    wpl::Semantic semantic;
 
-    struct ParserContext {
-        std::vector<wpl::AnalysisError> errors;
+    struct Parser_Context {
+        std::vector<wpl::Analysis_Error> errors;
         bool success;
         std::optional<Composite<std::string>> tree;
+        Name_Table name_table {};
     };
 
 public:
     Parser();
     Parser(std::string const&);
 
-    auto parse() -> ParserContext;
-    auto parse(std::string const&) -> ParserContext;
+    auto parse() -> Parser_Context;
+    auto parse(std::string const&) -> Parser_Context;
 };
 
 }

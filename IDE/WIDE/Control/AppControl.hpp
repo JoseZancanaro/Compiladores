@@ -3,14 +3,14 @@
 
 #include <QObject>
 
-class MainWindow;
+class Main_Window;
 
 class AppControl : public QObject
 {
     Q_OBJECT
 
 private:
-    MainWindow* mainWindow;
+    Main_Window* mainWindow;
 
 public:
     explicit AppControl(QObject *parent = nullptr);

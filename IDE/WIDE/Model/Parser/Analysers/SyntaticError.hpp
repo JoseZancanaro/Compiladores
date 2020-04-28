@@ -7,12 +7,12 @@
 
 namespace wpl {
 
-class SyntaticError : public AnalysisError
+class Syntatic_Error : public Analysis_Error
 {
 public:
 
-    SyntaticError(const std::string &msg, int position = -1)
-      : AnalysisError(msg, position) { }
+    Syntatic_Error(const std::string &msg, int position = -1)
+      : Analysis_Error(msg, position) { }
 };
 
 } //namespace wpl

@@ -5,15 +5,14 @@
 
 namespace wpl {
 
-class AnalysisError
+class Analysis_Error
 {
 public:
-
-    AnalysisError(const std::string &msg, int position = -1)
+    Analysis_Error(const std::string &msg, int position = -1)
       : message(msg), position(position) { }
 
-    const char *getMessage() const { return message.c_str(); }
-    int getPosition() const { return position; }
+    auto get_message() const -> const char * { return message.c_str(); }
+    auto get_position() const -> int { return position; }
 
 private:
     std::string message;

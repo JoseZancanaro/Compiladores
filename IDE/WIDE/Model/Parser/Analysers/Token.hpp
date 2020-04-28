@@ -10,15 +10,15 @@ namespace wpl {
 class Token
 {
 public:
-    Token(TokenId id, const std::string &lexeme, int position)
+    Token(Token_Id id, const std::string &lexeme, int position)
       : id(id), lexeme(lexeme), position(position) { }
 
-    TokenId getId() const { return id; }
-    const std::string &getLexeme() const { return lexeme; }
-    int getPosition() const { return position; }
+    auto get_id() const -> Token_Id { return id; }
+    auto get_lexeme() const -> std::string const& { return lexeme; }
+    auto get_position() const -> int { return position; }
 
 private:
-    TokenId id;
+    Token_Id id;
     std::string lexeme;
     int position;
 };

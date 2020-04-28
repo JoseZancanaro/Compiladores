@@ -1,16 +1,14 @@
-#include "Lexico.hpp"
+#include "Lexical.hpp"
 
 namespace wpl {
 
-void Lexico::setInput(const char *input)
-{
+auto Lexical::set_input(const char *input) -> void {
     this->input = input;
-    setPosition(0);
+    set_position(0);
 }
 
-Token *Lexico::nextToken()
-{
-    if ( ! hasInput() )
+auto Lexical::next_token() -> Token* {
+    if ( ! has_input() )
         return 0;
 
     unsigned start = position;
@@ -20,57 +18,57 @@ Token *Lexico::nextToken()
     int endState = -1;
     int end = -1;
 
-    while (hasInput())
+    while (has_input())
     {
         oldState = state;
-        state = nextState(nextChar(), state);
+        state = next_state(next_char(), state);
 
         if (state < 0)
             break;
 
         else
         {
-            if (tokenForState(state) >= 0)
+            if (token_for_state(state) >= 0)
             {
                 endState = state;
                 end = position;
             }
         }
     }
-    if (endState < 0 || (endState != state && tokenForState(oldState) == -2))
-        throw LexicalError(SCANNER_ERROR[oldState], start);
+    if (endState < 0 /*|| (endState != state && token_for_state(oldState) == -2)*/)
+        throw Lexical_Error(SCANNER_ERROR[oldState], start);
 
     position = end;
 
-    TokenId token = tokenForState(endState);
+    Token_Id token = token_for_state(endState);
 
     if (token == 0)
-        return nextToken();
+        return next_token();
     else
     {
-            std::string lexeme = input.substr(start, end-start);
-            token = lookupToken(token, lexeme);
-            return new Token(token, lexeme, start);
+        std::string lexeme = input.substr(start, end-start);
+        token = lookup_token(token, lexeme);
+        return new Token(token, lexeme, start);
     }
 }
 
-int Lexico::nextState(unsigned char c, int state) const
+int Lexical::next_state(unsigned char c, int state) const
 {
     int next = SCANNER_TABLE[state][c];
     return next;
 }
 
-TokenId Lexico::tokenForState(int state) const
+Token_Id Lexical::token_for_state(int state) const
 {
     int token = -1;
 
     if (state >= 0 && state < STATES_COUNT)
         token = TOKEN_STATE[state];
 
-    return static_cast<TokenId>(token);
+    return static_cast<Token_Id>(token);
 }
 
-TokenId Lexico::lookupToken(TokenId base, const std::string &key)
+Token_Id Lexical::lookup_token(Token_Id base, const std::string &key)
 {
     int start = SPECIAL_CASES_INDEXES[base];
     int end   = SPECIAL_CASES_INDEXES[base+1]-1;
@@ -81,10 +79,10 @@ TokenId Lexico::lookupToken(TokenId base, const std::string &key)
         const std::string current = SPECIAL_CASES_KEYS[half];
 
         if (current == key)
-            return static_cast<TokenId>(SPECIAL_CASES_VALUES[half]);
+            return static_cast<Token_Id>(SPECIAL_CASES_VALUES[half]);
         else if (current < key)
             start = half+1;
-        else  //(current > key)
+        else
             end = half-1;
     }
 

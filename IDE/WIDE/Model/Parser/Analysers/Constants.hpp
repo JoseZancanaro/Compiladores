@@ -3,7 +3,7 @@
 
 namespace wpl {
 
-enum TokenId 
+enum Token_Id
 {
     EPSILON  = 0,
     DOLLAR   = 1,

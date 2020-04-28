@@ -7,12 +7,11 @@
 
 namespace wpl {
 
-class SemanticError : public AnalysisError
+class Semantic_Error : public Analysis_Error
 {
 public:
-
-    SemanticError(const std::string &msg, int position = -1)
-      : AnalysisError(msg, position) { }
+    Semantic_Error(const std::string &msg, int position = -1)
+      : Analysis_Error(msg, position) { }
 };
 
 } //namespace wpl

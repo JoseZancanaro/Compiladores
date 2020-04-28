@@ -7,12 +7,11 @@
 
 namespace wpl {
 
-class LexicalError : public AnalysisError
+class Lexical_Error : public Analysis_Error
 {
 public:
-
-    LexicalError(const std::string &msg, int position = -1)
-      : AnalysisError(msg, position) { }
+    Lexical_Error(const std::string &msg, int position = -1)
+      : Analysis_Error(msg, position) { }
 };
 
 } //namespace wpl
