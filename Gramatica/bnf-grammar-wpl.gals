@@ -8,7 +8,7 @@ SemanticName = Semantico
 Package = wpl
 ScannerCaseSensitive = true
 ScannerTable = Full
-Input = Stream
+Input = String
 Parser = SLR
 #RegularDefinitions
 // SYMBOLS
@@ -202,7 +202,6 @@ DEL_RCB : "}"
 <loop_for_args_test>
 <loop_for_args_op>
 <loop_range_for>
-<loop_range_for_declaration>
 
 <selection>
 <selection_choose>
@@ -232,11 +231,6 @@ DEL_RCB : "}"
 <function_arg>
 <function_return>
 
-<function_call>
-<function_call_arg_list_guard>
-<function_call_arg_list>
-<function_call_arg>
-
 <expression_list>
 <expression>
 
@@ -257,6 +251,16 @@ DEL_RCB : "}"
 <precedence_l01>
 
 <value>
+
+<name_provider>
+
+<name_var_provider>
+<name_var_provider_subscript>
+
+<name_function_call_provider>
+<name_function_call_arg_list_guard>
+<name_function_call_arg_list>
+<name_function_call_arg>
 #Grammar
 // WPL
 // Context-free grammar especification
@@ -295,11 +299,9 @@ DEL_RCB : "}"
 
 <vector_constructor> ::= DEL_LSB <vector_constructor_values> DEL_RSB | KW_VECTOR;
 <vector_constructor_values> ::= <expression> DEL_COMMA <vector_constructor_values> | <expression> ;
-<vector_child> ::= ID_VAR #1102 DEL_LSB <expression> DEL_RSB ;
 
 <assignment_list> ::= <assignment> DEL_COMMA <assignment_list> | <assignment> ;
-<assignment> ::= ID_VAR #0400 OP_ATT <expression> #0401 | <assignment_vector_sub> ;
-<assignment_vector_sub> ::= ID_VAR #0402 DEL_LSB <expression> #0403 DEL_RSB OP_ATT <expression> #0404 ;
+<assignment> ::= <name_var_provider> #0600 OP_ATT <expression> #0601 ;
 
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
@@ -314,8 +316,7 @@ DEL_RCB : "}"
 <loop_for_args_test> ::= <expression> | î ;
 <loop_for_args_op> ::= <expression_list> | î ;
 
-<loop_range_for> ::= KW_FOR #0002 DEL_LP <loop_range_for_declaration> DEL_COLON <expression> DEL_RP <statement> #0003 ;
-<loop_range_for_declaration> ::= <type_complete> ID_VAR | ID_VAR ;
+<loop_range_for> ::= KW_FOR #0002 DEL_LP <type_complete> ID_VAR DEL_COLON <expression> DEL_RP <statement> #0003 ;
 
 // Selection Branches: choose-from, case-of, if-then-else, switch-case
 <selection> ::= <selection_if> | <selection_switch> ; // | <selection_case> | <selection_choose>
@@ -348,10 +349,6 @@ DEL_RCB : "}"
 <function_arg> ::= <type_complete> ID_VAR #0302 ;	
 <function_return> ::= KW_RETURN <expression> ;
 
-<function_call> ::= <function_name> #1101 DEL_LP <function_call_arg_list_guard> DEL_RP ;
-<function_call_arg_list_guard> ::= <function_call_arg_list> | î ; <function_call_arg_list> ::= <function_call_arg> DEL_COMMA <function_call_arg_list> | <function_call_arg> ;
-<function_call_arg> ::= <expression> ;
-
 // Expression and operator precedence tree
 <expression_list> ::= <expression> DEL_COMMA <expression_list> | <expression> ;
 <expression> ::= <precedence_tree> ;
@@ -359,12 +356,7 @@ DEL_RCB : "}"
 <precedence_tree> ::= <precedence_l12> ;
 
 <precedence_l13> ::= î ;
-		  // <precedence_l13> OP_ATT      <precedence_l12> |                        // = += -+ *= /= %=
-                    // <precedence_l13> OP_ATT_ADD  <precedence_l12> |
-		  // <precedence_l13> OP_ATT_SUB  <precedence_l12> |
-		  // <precedence_l13> OP_ATT_MULT <precedence_l12> |
-		  // <precedence_l13> OP_ATT_DIV  <precedence_l12> |
-		  // <precedence_l13> OP_ATT_REM   <precedence_l12> | <precedence_l12> ;
+		  
 <precedence_l12> ::= <precedence_l12> OP_OR       <precedence_l11> | <precedence_l11> ;	// ||
 <precedence_l11> ::= <precedence_l11> OP_AND      <precedence_l10> | <precedence_l10> ;	// &&
 <precedence_l10> ::= <precedence_l10> OP_BW_OR    <precedence_l09> | <precedence_l09> ;	// |
@@ -390,4 +382,14 @@ DEL_RCB : "}"
 		     <value> OP_INC | <value>     OP_DEC   |
 		     <value> ;
 
-<value> ::= ID_VAR #1100 | <function_call> | <vector_child> | <literal> | DEL_LP <precedence_tree> DEL_RP ;
+<value> ::= <name_provider> #0500 | <literal> #0501 | DEL_LP <precedence_tree> #0502 DEL_RP ;
+
+<name_provider> ::= <name_var_provider> | <name_function_call_provider> ;
+
+<name_var_provider> ::= ID_VAR #0400 <name_var_provider_subscript> ;
+<name_var_provider_subscript> ::= DEL_LSB #0401 <expression> #0402 DEL_RSB | î ;
+
+<name_function_call_provider> ::= <function_name> #0403 DEL_LP <name_function_call_arg_list_guard> DEL_RP ;
+<name_function_call_arg_list_guard> ::= <name_function_call_arg_list> | î ;
+<name_function_call_arg_list> ::= <name_function_call_arg> DEL_COMMA <name_function_call_arg_list> | <name_function_call_arg> ;
+<name_function_call_arg> ::= <expression> #0404 ;

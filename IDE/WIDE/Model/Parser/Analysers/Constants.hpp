@@ -3,7 +3,7 @@
 
 namespace wpl {
 
-enum Token_Id
+enum Token_Id 
 {
     EPSILON  = 0,
     DOLLAR   = 1,
@@ -100,7 +100,7 @@ extern int SPECIAL_CASES_VALUES[2];
 
 extern const char *SCANNER_ERROR[STATES_COUNT];
 
-const int FIRST_SEMANTIC_ACTION = 158;
+const int FIRST_SEMANTIC_ACTION = 160;
 
 const int SHIFT  = 0;
 const int REDUCE = 1;
@@ -109,11 +109,11 @@ const int ACCEPT = 3;
 const int GO_TO  = 4;
 const int ERROR  = 5;
 
-extern const int PARSER_TABLE[307][1261][2];
+extern const int PARSER_TABLE[296][761][2];
 
-extern const int PRODUCTIONS[174][2];
+extern const int PRODUCTIONS[166][2];
 
-extern const char *PARSER_ERROR[307];
+extern const char *PARSER_ERROR[296];
 
 } //namespace wpl
 

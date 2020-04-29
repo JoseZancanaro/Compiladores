@@ -1,9 +1,6 @@
-#ifndef SYMBOLS_HPP
-#define SYMBOLS_HPP
-
 namespace wpl {
 
-static const char* symbols[] = {"î",
+static const char* symbols[] = {                                "î",
                                 "$",
                                 "KW_VOID",
                                 "KW_INT",
@@ -87,7 +84,8 @@ static const char* symbols[] = {"î",
                                 "<definition>",
                                 "<statement_list>",
                                 "<statement>",
-                                "<scope>",
+                                "<scope_explicit>",
+                                "<scope_owned>",
                                 "<initialization>",
                                 "<declaration>",
                                 "<declaration_name_list>",
@@ -116,7 +114,6 @@ static const char* symbols[] = {"î",
                                 "<loop_for_args_test>",
                                 "<loop_for_args_op>",
                                 "<loop_range_for>",
-                                "<loop_range_for_declaration>",
                                 "<selection>",
                                 "<selection_choose>",
                                 "<selection_choose_opt_list>",
@@ -139,10 +136,6 @@ static const char* symbols[] = {"î",
                                 "<function_arg_list>",
                                 "<function_arg>",
                                 "<function_return>",
-                                "<function_call>",
-                                "<function_call_arg_list_guard>",
-                                "<function_call_arg_list>",
-                                "<function_call_arg>",
                                 "<expression_list>",
                                 "<expression>",
                                 "<precedence_tree>",
@@ -160,8 +153,14 @@ static const char* symbols[] = {"î",
                                 "<precedence_l02>",
                                 "<precedence_l01>",
                                 "<value>",
+                                "<name_provider>",
+                                "<name_var_provider>",
+                                "<name_var_provider_subscript>",
+                                "<name_function_call_provider>",
+                                "<name_function_call_arg_list_guard>",
+                                "<name_function_call_arg_list>",
+                                "<name_function_call_arg>",
 }; 
 
 } //namespace wpl
 
-#endif

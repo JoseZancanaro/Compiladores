@@ -6,45 +6,6 @@
 
 namespace wpl {
 
-auto get_type_name(Type_Name const& type) -> std::string  {
-
-    switch (type) {
-    case Type_Name::UNKNOWN: return "Unknown";
-    case Type_Name::VOID:    return "Void";
-    case Type_Name::INTEGER: return "Integer";
-    case Type_Name::FLOAT:   return "Float";
-    case Type_Name::DOUBLE:  return "Double";
-    case Type_Name::BOOL:    return "Bool";
-    case Type_Name::CHAR:    return "Char";
-    case Type_Name::STRING:  return "String";
-    case Type_Name::ANY:     return "Any";
-    }
-}
-
-auto get_type(std::string const& name) -> Type_Name {
-    if (name == "Unknown") {
-        return Type_Name::UNKNOWN;
-    } else if (name == "Void") {
-        return Type_Name::VOID;
-    } else if (name == "Integer") {
-        return Type_Name::INTEGER;
-    } else if (name == "Float") {
-        return Type_Name::FLOAT;
-    } else if (name == "Double") {
-        return Type_Name::DOUBLE;
-    } else if (name == "Bool") {
-        return Type_Name::BOOL;
-    } else if (name == "Char") {
-        return Type_Name::CHAR;
-    } else if (name == "String") {
-        return Type_Name::STRING;
-    } else if (name == "Any") {
-        return Type_Name::ANY;
-    } else {
-        return Type_Name::UNKNOWN;
-    }
-}
-
 auto decode_action(int action) -> std::pair<int, int> {
     return { action / 100, action % 100 };
 }
@@ -71,9 +32,26 @@ auto Semantic::execute_action(int action, Token const* token) -> void {
             this->do_function_action(suffix, token);
             break;
         }
-        case 11: {
-            this->do_access_control_action(suffix, token);
+        case 4: {
+            this->do_name_provider_action(suffix, token);
             break;
+        }
+        case 5: {
+            this->do_value_access_action(suffix, token);
+            break;
+        }
+        case 6: {
+            this->do_assignment_action(suffix, token);
+            break;
+        }
+        case 11: {
+            this->do_value_access_action(suffix, token);
+            break;
+        }
+        default: {
+            std::cout << "Uncaught action with type "
+                      << "Prefix" << prefix
+                      << "Suffix" << suffix << std::endl;
         }
     }
 }
@@ -179,9 +157,7 @@ auto Semantic::do_declare_action(int suffix, Token const* token) -> void {
             auto name = this->names.top(); this->names.pop();
             name.initialized = true;
 
-            //@TODO check type
-
-            this->try_put_name(name);
+            this->try_put_name(name); //@TODO Check type
 
             break;
         }
@@ -208,8 +184,8 @@ auto Semantic::do_function_action(int suffix, Token const* token) -> void {
     switch (Function_Suffix(suffix)) {
         case Function_Suffix::NAME_DISCOVER: {
             this->names.push({ this->scopes.top(), token->get_lexeme(),
-                              { get_type_name(Type_Name::UNKNOWN) },
-                              { get_type_name(Type_Name::UNKNOWN) }
+                              { get_type_description(Type_Name::UNKNOWN) },
+                              { get_type_description(Type_Name::UNKNOWN) }
                             });
             break;
         }
@@ -243,27 +219,64 @@ auto Semantic::do_function_action(int suffix, Token const* token) -> void {
     }
 }
 
-auto Semantic::do_access_control_action(int suffix, Token const* token) -> void {
-    enum class Access_Control_Suffix {
-        NAME_VALUE = 0,
-        FUNCTION_CALL = 1,
-        VECTOR_CHILD = 2
+auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
+    enum class Name_Provider_Suffix {
+        SET_NAME_VAR_ID = 0,
+        SET_NAME_FUNCTION_ID = 3
     };
 
-    switch (Access_Control_Suffix(suffix)) {
-        case Access_Control_Suffix::NAME_VALUE:
-        case Access_Control_Suffix::FUNCTION_CALL:
-        case Access_Control_Suffix::VECTOR_CHILD: {
-            auto id = token->get_lexeme();
+    switch (Name_Provider_Suffix(suffix)) {
+        case Name_Provider_Suffix::SET_NAME_VAR_ID:
+        case Name_Provider_Suffix::SET_NAME_FUNCTION_ID: {
+            this->name_providers.push({ token->get_lexeme() });
+            break;
+        }
+    }
+}
 
-            if (auto name = this->get_name(id); name.has_value()) {
-                std::cout << "Setting " << name.value()->id << " as read" << std::endl;
-                name.value()->read = true;
+auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* token) -> void {
+    enum class Value_Access_Suffix {
+        NAME_ACCESS = 0,
+        LITERAL_ACCESS = 1
+    };
 
-                std::cout << name.value()->read << std::endl;
+    switch (Value_Access_Suffix(suffix)) {
+        case Value_Access_Suffix::NAME_ACCESS: {
+            auto provider = this->name_providers.top();
+            this->name_providers.pop();
+
+            if (auto name_opt = this->try_get_name(provider.name_id); name_opt.has_value()) {
+                auto name = name_opt.value();
+                name->read = true;
+
+                if (!name->initialized) {
+                    std::cerr << "Name " << name->id << " is unitialized when used." << std::endl; // @TODO Logger class
+                }
+
+                // @TODO Put node in value stack
             }
-            else {
-                std::cerr << "Use of undeclared name: " << id << std::endl;
+
+            break;
+        }
+        case Value_Access_Suffix::LITERAL_ACCESS: {
+            // @TODO Literal access
+        }
+    }
+}
+
+auto Semantic::do_assignment_action(int suffix, [[maybe_unused]] Token const* token) -> void {
+    enum class Assignment_Suffix {
+        ASSIGN = 0
+    };
+
+    switch (Assignment_Suffix(suffix)) {
+        case Assignment_Suffix::ASSIGN: {
+            auto provider = this->name_providers.top();
+
+            if (auto name = this->try_get_name(provider.name_id); name.has_value()) {
+                name.value()->initialized = true;
+
+                // @TODO Verify type compatibility
             }
 
             break;
@@ -272,7 +285,7 @@ auto Semantic::do_access_control_action(int suffix, Token const* token) -> void 
 }
 
 auto Semantic::verify_scope_lifetime(std::size_t scope) -> void {
-    std::vector<std::tuple<std::size_t, std::string, bool>> exceptions = {
+    static std::vector<std::tuple<std::size_t, std::string, bool>> exceptions = {
         {0, "main", true}
     };
 
@@ -286,10 +299,12 @@ auto Semantic::verify_scope_lifetime(std::size_t scope) -> void {
 
     for (auto const& name : this->name_table) {
         if (name.scope == scope && !is_exception(name) && !name.read) {
-            std::cerr << "Variable declared and it's value was never read: " << name.id << std::endl; // @Todo Logger class
+            std::cerr << "Variable declared and its value was never read: " << name.id << std::endl; // @Todo Logger class
         }
     }
 }
+
+auto Semantic::sanitize_check_declared([[maybe_unused]] std::string const& id) -> void {} // @TODO Refactor
 
 auto Semantic::get_name(std::function<bool(Name const&)> const& predicate) -> std::optional<Name*> {
     for (auto & name : this->name_table) {
@@ -320,7 +335,16 @@ auto Semantic::get_name(std::string const& id) -> std::optional<Name*> {
     return std::nullopt;
 }
 
-auto Semantic::try_put_name(const Name& name) -> void {
+auto Semantic::try_get_name(std::string const& id) -> std::optional<Name*> {
+    if (auto name = this->get_name(id); name.has_value()) {
+        return name;
+    } else {
+        std::cerr << "Use of undeclared name: " << id << std::endl; // @TODO Logger class
+        return std::nullopt;
+    }
+}
+
+auto Semantic::try_put_name(Name const& name) -> void {
     if (this->get_name(name.scope, name.id).has_value()) {
         std::cerr << "Redefinition of " << name.id << std::endl; // @TODO Logger class
     }

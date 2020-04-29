@@ -20,8 +20,10 @@ SOURCES += \
     Model/IO/FileHandler.cpp \
     Model/Parser/Analysers/Constants.cpp \
     Model/Parser/Analysers/Lexical.cpp \
+    Model/Parser/Analysers/OperatorDefinitions.cpp \
     Model/Parser/Analysers/Semantic.cpp \
     Model/Parser/Analysers/Syntactic.cpp \
+    Model/Parser/Analysers/TypeDefinitions.cpp \
     Model/Parser/Parser.cpp \
     View/CodeEditor/CodeEditor.cpp \
     View/AnalysisWindow.cpp \
@@ -39,12 +41,15 @@ HEADERS += \
     Model/Parser/Analysers/Constants.hpp \
     Model/Parser/Analysers/Lexical.hpp \
     Model/Parser/Analysers/LexicalError.hpp \
+    Model/Parser/Analysers/OperatorDefinitions.hpp \
+    Model/Parser/Analysers/SemanticTable.hpp \
     Model/Parser/Analysers/Semantic.hpp \
     Model/Parser/Analysers/SemanticError.hpp \
     Model/Parser/Analysers/Symbols.hpp \
     Model/Parser/Analysers/Syntactic.hpp \
     Model/Parser/Analysers/SyntaticError.hpp \
     Model/Parser/Analysers/Token.hpp \
+    Model/Parser/Analysers/TypeDefinitions.hpp \
     Model/Parser/Parser.hpp \
     View/CodeEditor/CodeEditor.hpp \
     View/AnalysisWindow.hpp \
