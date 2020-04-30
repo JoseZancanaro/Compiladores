@@ -2,7 +2,7 @@
 
 namespace wpl {
 
-auto get_type_description(Type_Name const& type) -> std::string  {
+auto get_type_description(Type_Name type) -> std::string  {
     switch (type) {
     case Type_Name::UNKNOWN: return "Unknown";
     case Type_Name::INVALID: return "Invalid";

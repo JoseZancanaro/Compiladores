@@ -301,7 +301,7 @@ DEL_RCB : "}"
 <vector_constructor_values> ::= <expression> DEL_COMMA <vector_constructor_values> | <expression> ;
 
 <assignment_list> ::= <assignment> DEL_COMMA <assignment_list> | <assignment> ;
-<assignment> ::= <name_var_provider> #0600 OP_ATT <expression> #0601 ;
+<assignment> ::= <name_var_provider> OP_ATT <expression> #0600 ;
 
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
@@ -382,7 +382,7 @@ DEL_RCB : "}"
 		     <value> OP_INC | <value>     OP_DEC   |
 		     <value> ;
 
-<value> ::= <name_provider> #0500 | <literal> #0501 | DEL_LP <precedence_tree> #0502 DEL_RP ;
+<value> ::= <name_provider> #0500 | <literal> #0501 | DEL_LP <precedence_tree> DEL_RP ;
 
 <name_provider> ::= <name_var_provider> | <name_function_call_provider> ;
 

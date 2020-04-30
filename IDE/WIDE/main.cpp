@@ -5,6 +5,8 @@
 
 #include "Model/IO/FileHandler.hpp"
 
+#include "Model/Parser/Analysers/SemanticTable.hpp"
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);

@@ -45,6 +45,7 @@ HEADERS += \
     Model/Parser/Analysers/SemanticTable.hpp \
     Model/Parser/Analysers/Semantic.hpp \
     Model/Parser/Analysers/SemanticError.hpp \
+    Model/Parser/Analysers/SemanticTable_impl.hpp \
     Model/Parser/Analysers/Symbols.hpp \
     Model/Parser/Analysers/Syntactic.hpp \
     Model/Parser/Analysers/SyntaticError.hpp \

@@ -279,6 +279,8 @@ auto Semantic::do_assignment_action(int suffix, [[maybe_unused]] Token const* to
                 // @TODO Verify type compatibility
             }
 
+            this->name_providers.pop();
+
             break;
         }
     }

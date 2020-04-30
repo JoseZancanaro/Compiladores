@@ -17,6 +17,7 @@ enum class Type_Name {
     BOOL = 3,
     CHAR = 4,
     STRING = 5,
+    FIRST_TYPE = INTEGER,
     LAST_TYPE = STRING
 };
 
@@ -36,8 +37,12 @@ struct Type {
     bool constant {};
 };
 
-auto get_type_description(Type_Name const& type) -> std::string;
+auto get_type_description(Type_Name type) -> std::string;
 auto get_type_name(std::string const& name) -> Type_Name;
+
+constexpr auto is_value_type(Type_Name const& type) -> bool {
+    return type >= Type_Name::FIRST_TYPE && type <= Type_Name::LAST_TYPE;
+};
 
 }
 
