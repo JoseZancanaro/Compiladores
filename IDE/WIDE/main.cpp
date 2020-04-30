@@ -5,7 +5,7 @@
 
 #include "Model/IO/FileHandler.hpp"
 
-#include "Model/Parser/Analysers/SemanticTable.hpp"
+#include "Model/Parser/Analysers/Semantic.hpp"
 
 int main(int argc, char *argv[])
 {

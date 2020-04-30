@@ -4,6 +4,8 @@
 **Compilador**: Spring Compiler  
 **IDE**: Winter IDE (Wide)  
 
+Existem exemplos de código em IDE/WIDE/Samples
+
 ```python
 
 /-
@@ -196,5 +198,8 @@ Double[] vetor;
 | 01 | Tipo |
 | 02 | Declaração |
 | 03 | Função |
-| 11 | Controle de Leitura |
-
+| 04 | Provedor de nomes |
+| 05 | Acesso de valores |
+| 06 | Atribuição |
+| 07 | Provedor de valores |
+| 08 | Solução de Expressão |

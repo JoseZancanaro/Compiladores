@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <optional>
 
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -18,7 +17,7 @@ class Main_Window : public QMainWindow // @TODO snake_case
 {
     Q_OBJECT
 
-    enum Tabs { ERRORS, WARNINGS, COMPILER_OUTPUT };
+    enum Tabs { ISSUES, COMPILER_OUTPUT };
 
 public:
     Main_Window(QWidget *parent = nullptr);

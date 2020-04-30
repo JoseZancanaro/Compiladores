@@ -46,7 +46,11 @@ enum class Function_Suffix {
 
 enum class Name_Provider_Suffix {
     SET_NAME_VAR_ID = 0,
-    SET_NAME_FUNCTION_ID = 3
+    SET_SUBSCRIPT_ACCESS = 1,
+    SET_SUBSCRIPT_INDEX = 2,
+    SET_NAME_FUNCTION_ID = 3,
+    SET_CALL_ARG = 4,
+    SET_CALL_END = 5
 };
 
 enum class Value_Provider_Suffix {

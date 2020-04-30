@@ -131,15 +131,17 @@ void Main_Window::dispatchRun()
 {
     using namespace wpl::language;
 
+    this->ui->textOut->clear();
+
     std::string input = this->codeEditor->toPlainText().toStdString();
     Parser parser(input);
 
-    auto [errors, success, tree, names] = parser.parse();
+    auto [issues, success, tree, names] = parser.parse();
 
-    this->ui->listErrors->clear();
+    this->ui->list_issues->clear();
 
-    for (auto const& e : errors) {
-        this->ui->listErrors->addItem(QString(e.get_message()));
+    for (auto const& issue : issues) {
+        this->ui->list_issues->addItem(QString::fromStdString(issue.to_string()));
     }
 
     auto [color, message] = [status = success](){
@@ -151,7 +153,7 @@ void Main_Window::dispatchRun()
     }();
 
     this->ui->textOut->setTextColor(color);
-    this->ui->textOut->setText(message);
+    this->ui->textOut->append(message);
 
     this->ui->tabWidget->setCurrentIndex(Tabs::COMPILER_OUTPUT);
 

@@ -19,15 +19,15 @@ class Parser
     wpl::Semantic semantic;
 
     struct Parser_Context {
-        std::vector<wpl::Analysis_Error> errors;
+        std::vector<Issue> issues;
         bool success;
         std::optional<Composite<std::string>> tree;
         Name_Table name_table {};
     };
 
 public:
-    Parser();
-    Parser(std::string const&);
+    Parser(std::unique_ptr<Logger_Base> logger = std::make_unique<Null_Logger>());
+    Parser(std::string const&, std::unique_ptr<Logger_Base> logger = std::make_unique<Null_Logger>());
 
     auto parse() -> Parser_Context;
     auto parse(std::string const&) -> Parser_Context;

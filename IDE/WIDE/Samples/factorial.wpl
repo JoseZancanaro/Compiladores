@@ -1,0 +1,13 @@
+def factorial(Integer num) -> Integer {
+    if (num == 1) {
+          return 1;
+    } else {
+          return (num * factorial(num-1));
+    } 
+}
+
+def main() -> Integer {
+     Integer[1] vec = factorial(5);
+     print("The factorial of 5 is: ", factorial(5));
+     return 0;
+}

@@ -23,7 +23,7 @@
       <bool>true</bool>
      </attribute>
      <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
+      <bool>true</bool>
      </attribute>
      <column>
       <property name="text">
@@ -53,6 +53,11 @@
      <column>
       <property name="text">
        <string>Read</string>
+      </property>
+     </column>
+     <column>
+      <property name="text">
+       <string>Param_Pos</string>
       </property>
      </column>
      <column>
