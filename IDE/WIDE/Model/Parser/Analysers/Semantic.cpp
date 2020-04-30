@@ -1,14 +1,11 @@
 #include "Semantic.hpp"
 #include "Constants.hpp"
+#include "ActionDefinitions.hpp"
 
 #include <iostream>
 #include <tuple>
 
 namespace wpl {
-
-auto decode_action(int action) -> std::pair<int, int> {
-    return { action / 100, action % 100 };
-}
 
 auto Semantic::execute_action(int action, Token const* token) -> void {
     //@TODO enum class
@@ -36,6 +33,10 @@ auto Semantic::execute_action(int action, Token const* token) -> void {
             this->do_name_provider_action(suffix, token);
             break;
         }
+        case 7: {
+            this->do_value_provider_action(suffix, token);
+            break;
+        }
         case 5: {
             this->do_value_access_action(suffix, token);
             break;
@@ -44,8 +45,8 @@ auto Semantic::execute_action(int action, Token const* token) -> void {
             this->do_assignment_action(suffix, token);
             break;
         }
-        case 11: {
-            this->do_value_access_action(suffix, token);
+        case 8: {
+            this->do_expression_handling_action(suffix, token);
             break;
         }
         default: {
@@ -57,21 +58,13 @@ auto Semantic::execute_action(int action, Token const* token) -> void {
 }
 
 auto Semantic::do_scope_action(int suffix, [[maybe_unused]] Token const* token) -> void {
-    enum class Scope_Suffix {
-        PUSH_GLOBAL = 0,
-        POP_GLOBAL = 1,
-        PUSH_QUALIFIED = 2,
-        POP_QUALIFIED = 3
-
-    };
-
     auto to_string = [](Type const& type) {
         std::string vector = type.array ? "[]" : "";
         std::string constant = type.constant ? " const" : "";
         std::string ref = type.ref ? "&" : "";
         std::string pointer = type.pointer ? "*" : "";
 
-        return type.name + vector + constant + ref + pointer;
+        return get_type_description(type.name) + vector + constant + ref + pointer;
     };
 
     switch (Scope_Suffix(suffix)) {
@@ -85,7 +78,7 @@ auto Semantic::do_scope_action(int suffix, [[maybe_unused]] Token const* token) 
 
             for (auto const& n : this->name_table) {
                 std::cout << n.id << " " << n.scope << " " << to_string(n.type)
-                          << " " << to_string(n.type) << " " << n.read << std::endl;
+                          << " " << to_string(n.inferred) << " " << n.read << std::endl;
             }
 
             break;
@@ -103,19 +96,9 @@ auto Semantic::do_scope_action(int suffix, [[maybe_unused]] Token const* token) 
 }
 
 auto Semantic::do_type_action(int suffix, Token const* token) -> void {
-    enum class Type_Suffix {
-        PUSH_TYPE_NAME = 0,
-        SET_VEC_MODIFIER = 1,
-        ACK_VEC_SIZE_MODIFIER = 2,
-        SET_VEC_SIZE_MODIFIER = 3,
-        SET_CONST_MODIFIER = 4,
-        SET_REF_MODIFIER = 5,
-        SET_POINTER_MODIFIER = 6,
-    };
-
     switch (Type_Suffix(suffix)) {
         case Type_Suffix::PUSH_TYPE_NAME: {
-            this->types.push({ token->get_lexeme() });
+            this->types.push({ get_type_name(token->get_lexeme()) });
             break;
         }
         case Type_Suffix::SET_VEC_MODIFIER:
@@ -140,16 +123,11 @@ auto Semantic::do_type_action(int suffix, Token const* token) -> void {
 }
 
 auto Semantic::do_declare_action(int suffix, Token const* token) -> void {
-    enum class Declare_Suffix {
-        PUSH_NAME_ID = 0,
-        PUSH_INITIALIZED = 1,
-        PUSH_UNINITIALIZED = 2,
-        POP_TYPE = 3
-    };
-
     switch (Declare_Suffix(suffix)) {
         case Declare_Suffix::PUSH_NAME_ID: {
             this->names.push({ this->scopes.top(), token->get_lexeme(), this->types.top(), this->types.top() });
+
+            //@TODO Check type
 
             break;
         }
@@ -157,12 +135,27 @@ auto Semantic::do_declare_action(int suffix, Token const* token) -> void {
             auto name = this->names.top(); this->names.pop();
             name.initialized = true;
 
-            this->try_put_name(name); //@TODO Check type
+            auto expression_node = this->expression_nodes.top();
+            this->expression_nodes.pop();
+
+            if (name.type.name == Type_Name::ANY) {
+                name.inferred = this->infer_any_type(name.type, expression_node);
+            }
+
+            this->sanitize_type_compatibility(name, expression_node.type);
+
+            this->try_put_name(name);
 
             break;
         }
         case Declare_Suffix::PUSH_UNINITIALIZED: {
             auto name = this->names.top(); this->names.pop();
+
+            if (name.type.name == Type_Name::ANY) {
+                std::cerr << "Declaration of name " << name.id
+                          << " with deduced type Any requires an initializer" << std::endl; // @TODO Logger Class
+            }
+
             this->try_put_name(name);
 
             break;
@@ -175,17 +168,11 @@ auto Semantic::do_declare_action(int suffix, Token const* token) -> void {
 }
 
 auto Semantic::do_function_action(int suffix, Token const* token) -> void {
-    enum class Function_Suffix {
-        NAME_DISCOVER = 0,
-        NAME_FUNC_PUSH = 1,
-        NAME_PARAM_PUSH = 2
-    };
-
     switch (Function_Suffix(suffix)) {
         case Function_Suffix::NAME_DISCOVER: {
             this->names.push({ this->scopes.top(), token->get_lexeme(),
-                              { get_type_description(Type_Name::UNKNOWN) },
-                              { get_type_description(Type_Name::UNKNOWN) }
+                              { Type_Name::UNKNOWN },
+                              { Type_Name::UNKNOWN }
                             });
             break;
         }
@@ -220,11 +207,6 @@ auto Semantic::do_function_action(int suffix, Token const* token) -> void {
 }
 
 auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
-    enum class Name_Provider_Suffix {
-        SET_NAME_VAR_ID = 0,
-        SET_NAME_FUNCTION_ID = 3
-    };
-
     switch (Name_Provider_Suffix(suffix)) {
         case Name_Provider_Suffix::SET_NAME_VAR_ID:
         case Name_Provider_Suffix::SET_NAME_FUNCTION_ID: {
@@ -234,12 +216,32 @@ auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
     }
 }
 
-auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* token) -> void {
-    enum class Value_Access_Suffix {
-        NAME_ACCESS = 0,
-        LITERAL_ACCESS = 1
-    };
+auto Semantic::do_value_provider_action(int suffix, [[maybe_unused]] Token const* token) -> void {
+    switch (Value_Provider_Suffix(suffix)) {
+        case Value_Provider_Suffix::PUSH_INT: {
+            this->value_providers.push({ Type_Name::INTEGER });
+            break;
+        }
+        case Value_Provider_Suffix::PUSH_DOUBLE: {
+            this->value_providers.push({ Type_Name::DOUBLE });
+            break;
+        }
+        case Value_Provider_Suffix::PUSH_BOOL: {
+            this->value_providers.push({ Type_Name::BOOL });
+            break;
+        }
+        case Value_Provider_Suffix::PUSH_CHAR: {
+            this->value_providers.push({ Type_Name::CHAR });
+            break;
+        }
+        case Value_Provider_Suffix::PUSH_STRING: {
+            this->value_providers.push({ Type_Name::STRING });
+            break;
+        }
+    }
+}
 
+auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* token) -> void {
     switch (Value_Access_Suffix(suffix)) {
         case Value_Access_Suffix::NAME_ACCESS: {
             auto provider = this->name_providers.top();
@@ -253,35 +255,172 @@ auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* 
                     std::cerr << "Name " << name->id << " is unitialized when used." << std::endl; // @TODO Logger class
                 }
 
-                // @TODO Put node in value stack
+                this->expression_nodes.push({ name->inferred });
             }
 
             break;
         }
         case Value_Access_Suffix::LITERAL_ACCESS: {
-            // @TODO Literal access
+            auto provider = this->value_providers.top();
+            this->value_providers.pop();
+
+            this->expression_nodes.push({ provider.type });
         }
     }
 }
 
 auto Semantic::do_assignment_action(int suffix, [[maybe_unused]] Token const* token) -> void {
-    enum class Assignment_Suffix {
-        ASSIGN = 0
-    };
-
     switch (Assignment_Suffix(suffix)) {
         case Assignment_Suffix::ASSIGN: {
             auto provider = this->name_providers.top();
-
-            if (auto name = this->try_get_name(provider.name_id); name.has_value()) {
-                name.value()->initialized = true;
-
-                // @TODO Verify type compatibility
-            }
-
             this->name_providers.pop();
 
+            auto expression_node = this->expression_nodes.top();
+            this->expression_nodes.pop();
+
+            if (auto name_opt = this->try_get_name(provider.name_id); name_opt.has_value()) {
+                auto name = name_opt.value();
+                name->initialized = true;
+
+                this->sanitize_type_compatibility(name, expression_node.type);
+            }
+
             break;
+        }
+    }
+}
+
+auto Semantic::do_expression_handling_action(int suffix, [[maybe_unused]] Token const* token) -> void {
+    auto push_result_type = [&](Expression_Node && node) {
+        if (node.type.name != Type_Name::INVALID) {
+            this->expression_nodes.push(std::move(node));
+        } else {
+            this->expression_nodes.push(std::move(node));
+            std::cerr << "Invalid result type" << std::endl; // @TODO Move to class scope, Logger class
+        }
+    };
+
+    if (is_unary_expression_suffix(suffix)) {
+        auto node = this->expression_nodes.top();
+        this->expression_nodes.pop();
+
+        switch (Unary_Expression_Handling_Suffix(suffix)) {
+            case Unary_Expression_Handling_Suffix::ARITHMETIC_ADD:
+            case Unary_Expression_Handling_Suffix::ARITHMETIC_SUB: {
+                if (type_traits::is_numeric(node.type)) {
+                    push_result_type({ node.type });
+                } else {
+                    push_result_type({{ Type_Name::INVALID }});
+                    std::cerr << "Unary arithmetic operator on non numeric type." << std::endl; // @TODO Logger class
+                }
+                break;
+            }
+            case Unary_Expression_Handling_Suffix::LOGICAL_NOT: {
+                if (type_traits::is_truthy_type(node.type)) {
+                    push_result_type({{ Type_Name::BOOL }});
+                } else {
+                    push_result_type({{ Type_Name::INVALID }});
+                    std::cerr << "Unary negate operator on non truthy type." << std::endl; // @TODO Logger class
+                }
+                break;
+            }
+            case Unary_Expression_Handling_Suffix::BITWISE_COMP: {
+                if (type_traits::is_integral(node.type)) {
+                    push_result_type({ node.type });
+                } else {
+                    push_result_type({{ Type_Name::INVALID }});
+                    std::cerr << "Unary complement operator on non integral type." << std::endl; // @TODO Logger class
+                }
+                break;
+            }
+            case Unary_Expression_Handling_Suffix::ATTRIBUTION_PREFIX_INC:
+            case Unary_Expression_Handling_Suffix::ATTRIBUTION_PREFIX_DEC:
+            case Unary_Expression_Handling_Suffix::ATTRIBUTION_POSTFIX_INC:
+            case Unary_Expression_Handling_Suffix::ATTRIBUTION_POSTFIX_DEC: {
+                if (type_traits::is_numeric(node.type)) {
+                    push_result_type({ node.type });
+                } else {
+                    push_result_type({{ Type_Name::INVALID }});
+                    std::cerr << "Unary arithmetic operator on non numeric type." << std::endl; // @TODO Logger class
+                }
+                break;
+            }
+        }
+    } else {
+        auto left = this->expression_nodes.top();
+        this->expression_nodes.pop();
+
+        auto right = this->expression_nodes.top();
+        this->expression_nodes.pop();
+
+        switch (Binary_Expression_Handling_Suffix(suffix)) {
+            case Binary_Expression_Handling_Suffix::LOGICAL_OR:
+            case Binary_Expression_Handling_Suffix::LOGICAL_AND: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::LOGICAL) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::BITWISE_OR:
+            case Binary_Expression_Handling_Suffix::BITWISE_XOR:
+            case Binary_Expression_Handling_Suffix::BITWISE_AND:
+            case Binary_Expression_Handling_Suffix::BITWISE_SR:
+            case Binary_Expression_Handling_Suffix::BITWISE_SL: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::BITWISE) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::RELATIONAL_EQ:
+            case Binary_Expression_Handling_Suffix::RELATIONAL_NEQ:
+            case Binary_Expression_Handling_Suffix::RELATIONAL_GT:
+            case Binary_Expression_Handling_Suffix::RELATIONAL_LT:
+            case Binary_Expression_Handling_Suffix::RELATIONAL_GTE:
+            case Binary_Expression_Handling_Suffix::RELATIONAL_LTE: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::RELATIONAL) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::ARITHMETIC_ADD: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::ADD) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::ARITHMETIC_SUB: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::SUB) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::ARITHMETIC_MULT: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::MULT) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::ARITHMETIC_DIV: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::DIV) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::ARITHMETIC_REM: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::REM) }
+                });
+                break;
+            }
+            case Binary_Expression_Handling_Suffix::ARITHMETIC_EXP: {
+                push_result_type({
+                    { Semantic_Table::get_result_type(left.type.name, right.type.name, Operator::EXP) }
+                });
+                break;
+            }
+            default: {
+                std::cerr << "Uncaught " << suffix << std::endl;
+            }
         }
     }
 }
@@ -301,12 +440,27 @@ auto Semantic::verify_scope_lifetime(std::size_t scope) -> void {
 
     for (auto const& name : this->name_table) {
         if (name.scope == scope && !is_exception(name) && !name.read) {
-            std::cerr << "Variable declared and its value was never read: " << name.id << std::endl; // @Todo Logger class
+            std::cerr << "Name declared and its value was never read: " << name.id << std::endl; // @Todo Logger Class
         }
     }
 }
 
 auto Semantic::sanitize_check_declared([[maybe_unused]] std::string const& id) -> void {} // @TODO Refactor
+
+auto Semantic::sanitize_type_compatibility(Name const* name, Type const& type) -> void {
+    if (auto support = Semantic_Table::get_type_compatibility(name->inferred.name, type.name);
+        support == Type_Compatibility::NONE) {
+        std::cerr << "Can't assign " << get_type_description(type.name)
+                  << " into " << get_type_description(name->inferred.name) << std::endl; // @TODO Logger Class
+    } else if (support == Type_Compatibility::NARROWING) {
+        std::cerr << "Narrowing " << get_type_description(type.name)
+                  << " into " << get_type_description(name->inferred.name) << std::endl;
+    }
+}
+
+auto Semantic::sanitize_type_compatibility(Name const& name, Type const& type) -> void {
+    this->sanitize_type_compatibility(&name, type);
+}
 
 auto Semantic::get_name(std::function<bool(Name const&)> const& predicate) -> std::optional<Name*> {
     for (auto & name : this->name_table) {
@@ -357,6 +511,10 @@ auto Semantic::try_put_name(Name const& name) -> void {
 
 auto Semantic::get_name_table() const -> Name_Table {
     return this->name_table;
+}
+
+auto Semantic::infer_any_type(Type const& type, Expression_Node const& node) -> Type {
+    return { node.type.name, node.type.array, type.pointer, type.ref, type.constant };
 }
 
 } //namespace wpl

@@ -48,8 +48,8 @@ void Name_Table_Window::set_name_table(wpl::Name_Table const& name_table)
         std::array columns {
             detail::make_table_widget_item(name.scope),
             detail::make_table_widget_item(name.id),
-            detail::make_table_widget_item(name.type.name),
-            detail::make_table_widget_item(name.inferred.name),
+            detail::make_table_widget_item(get_type_description(name.type.name)),
+            detail::make_table_widget_item(get_type_description(name.inferred.name)),
             detail::make_table_widget_item(name.initialized),
             detail::make_table_widget_item(name.read),
             detail::make_table_widget_item(name.param),

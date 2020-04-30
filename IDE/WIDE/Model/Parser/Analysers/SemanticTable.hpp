@@ -5,7 +5,7 @@
 
 namespace wpl {
 
-    class SemanticTable
+    class Semantic_Table
     {
 
     private:
@@ -14,7 +14,7 @@ namespace wpl {
         static constexpr auto attribute_table = detail::make_type_compatibility_table();
 
     public:
-        SemanticTable() = delete;
+        Semantic_Table() = delete;
 
         static constexpr Type_Name get_result_type(Type_Name left, Type_Name right, Operator op) {
             namespace d = wpl::detail;

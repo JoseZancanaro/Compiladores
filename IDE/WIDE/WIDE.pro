@@ -37,6 +37,7 @@ HEADERS += \
     Control/AppControl.hpp \
     Model/Composite.hpp \
     Model/IO/FileHandler.hpp \
+    Model/Parser/Analysers/ActionDefinitions.hpp \
     Model/Parser/Analysers/AnalysisError.hpp \
     Model/Parser/Analysers/Constants.hpp \
     Model/Parser/Analysers/Lexical.hpp \

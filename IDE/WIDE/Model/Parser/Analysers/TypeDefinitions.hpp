@@ -28,7 +28,7 @@ enum class Type_Compatibility {
 };
 
 struct Type {
-    std::string name;
+    Type_Name name;
 
     // Type Flags
     bool array {};
@@ -36,6 +36,44 @@ struct Type {
     bool ref {};
     bool constant {};
 };
+
+namespace type_traits {
+    constexpr auto is_primitive(Type const& type) -> bool {
+        return type.array == false && type.pointer == false;
+    }
+
+    constexpr auto is_primitive_integral(Type const& type) -> bool {
+        return type.name == Type_Name::INTEGER;
+    }
+
+    constexpr auto is_primitive_floating_point(Type const& type) -> bool {
+        return type.name == Type_Name::FLOAT || type.name == Type_Name::DOUBLE;
+    }
+
+    constexpr auto is_primitive_numeric(Type const& type) -> bool {
+        return is_primitive_integral(type) || is_primitive_floating_point(type);
+    }
+
+    constexpr auto is_primitive_truthy_type(Type const& type) -> bool {
+        return is_primitive_numeric(type) || type.name == Type_Name::BOOL;
+    }
+
+    constexpr auto is_integral(Type const& type) -> bool {
+        return is_primitive_integral(type) && is_primitive(type);
+    }
+
+    constexpr auto is_floating_point(Type const& type) -> bool {
+        return is_primitive_floating_point(type) && is_primitive(type);
+    }
+
+    constexpr auto is_numeric(Type const& type) -> bool {
+        return is_primitive_numeric(type) && is_primitive(type);
+    }
+
+    constexpr auto is_truthy_type(Type const& type) -> bool {
+        return is_primitive_truthy_type(type) && is_primitive(type);
+    }
+}
 
 auto get_type_description(Type_Name type) -> std::string;
 auto get_type_name(std::string const& name) -> Type_Name;

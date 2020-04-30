@@ -44,7 +44,7 @@ namespace wpl::detail {
 
         /* L:INTEGER */
         Second_Type_Array integer_results {{
-                           /*    ADD          SUB          MULT         DIV          REM           EXP        REL     LOGIC      BITWISE   */
+                           /*    ADD          SUB          MULT         DIV          REM           EXP        REL       LOGIC      BITWISE   */
             /* R:INTEGER */ { Tn::INTEGER, Tn::INTEGER, Tn::INTEGER, Tn::FLOAT,   Tn::INTEGER, Tn::INTEGER, Tn::BOOL, Tn::BOOL, Tn::INTEGER },
             /* R:FLOAT   */ { Tn::FLOAT,   Tn::FLOAT,   Tn::FLOAT,   Tn::FLOAT,   Tn::INVALID, Tn::FLOAT,   Tn::BOOL, Tn::BOOL, Tn::INVALID },
             /* R:DOUBLE  */ { Tn::DOUBLE,  Tn::DOUBLE,  Tn::DOUBLE,  Tn::DOUBLE,  Tn::INVALID, Tn::DOUBLE,  Tn::BOOL, Tn::BOOL, Tn::INVALID },
