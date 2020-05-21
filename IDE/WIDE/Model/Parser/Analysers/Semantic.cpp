@@ -6,6 +6,34 @@
 #include <sstream>
 #include <tuple>
 
+namespace wpl::bip_asm {
+
+auto format_program(BIP_Program const& program) -> std::string {
+    std::stringstream ss;
+
+    // Data
+    ss << ".data" << '\n';
+
+    for (auto const& decl : program.data) {
+        ss << '\t' << decl.id << ": ";
+
+        ss << decl.default_value.front();
+
+        for (size_t i = 1; i < decl.default_value.size(); ++i) {
+            ss << ", " << decl.default_value.at(i);
+        }
+
+        ss << '\n';
+    }
+
+    // Text
+    ss << ".text" << '\n';
+
+    return ss.str();
+}
+
+}
+
 namespace wpl {
 
 Semantic::Semantic(std::unique_ptr<Logger_Base> && p_logger)
@@ -13,7 +41,7 @@ Semantic::Semantic(std::unique_ptr<Logger_Base> && p_logger)
 
     // Push STD lib
     this->name_table.push_back({ 0, "print", { Type_Name::VOID }, { Type_Name::VOID }, true, true, true, 0, false, true });
-    this->name_table.push_back({ 0, "read", { Type_Name::VOID }, { Type_Name::VOID }, true, true, true, 0, false, true });
+    this->name_table.push_back({ 0, "read", { Type_Name::INTEGER }, { Type_Name::INTEGER }, true, true, true, 0, false, true });
 }
 
 auto Semantic::execute_action(int action, Token const* token) -> void {
@@ -84,6 +112,9 @@ auto Semantic::do_scope_action(int suffix, [[maybe_unused]] Token const* token) 
         case Scope_Suffix::POP_GLOBAL: {
             this->verify_scope_lifetime(this->scopes.top());
             this->scopes.pop();
+
+            std::cout << bip_asm::format_program(this->compiled) << std::endl;
+
             break;
         }
         case Scope_Suffix::PUSH_QUALIFIED: {
@@ -104,10 +135,27 @@ auto Semantic::do_type_action(int suffix, Token const* token) -> void {
             this->types.push({ get_type_name(token->get_lexeme()) });
             break;
         }
-        case Type_Suffix::SET_VEC_MODIFIER:
-        case Type_Suffix::ACK_VEC_SIZE_MODIFIER:
-        case Type_Suffix::SET_VEC_SIZE_MODIFIER: {
+        case Type_Suffix::SET_VEC_MODIFIER: {
+            this->issue_error(
+                detail::to_string("Array size must be specified.")
+            ); // @TODO Enhance Logger Class
+            break;
+        }
+        case Type_Suffix::ACK_VEC_SIZE_MODIFIER: {
             this->types.top().array = true;
+            break;
+        }
+        case Type_Suffix::SET_VEC_SIZE_MODIFIER: {
+            auto size = std::stoi(token->get_lexeme());
+
+            if (size <= 0) {
+                this->issue_error(
+                    detail::to_string("Array size must be greater than 0.")
+                ); // @TODO Enhance Logger Class
+            } else {
+                this->types.top().length = size;
+            }
+
             break;
         }
         case Type_Suffix::SET_CONST_MODIFIER: {
@@ -603,6 +651,7 @@ auto Semantic::try_put_name(Name const& name) -> void {
     }
     else {
         this->name_table.push_back(name);
+        this->bip_asm_data(name);
     }
 }
 
@@ -643,6 +692,16 @@ auto Semantic::issue_error(std::string && message) -> void {
     logger->log(message);
     this->issues.push_back({ Issue::Issue_Type::ERROR, std::move(message) });
     throw Semantic_Error(message);
+}
+
+auto Semantic::bip_asm_data(Name const& name) -> void {
+    if (!name.function) {
+        if (name.inferred.array) {
+            this->compiled.data.push_back({ name.id, std::vector<int>(name.inferred.length, 0) });
+        } else {
+            this->compiled.data.push_back({ name.id, {0} });
+        }
+    }
 }
 
 } //namespace wpl

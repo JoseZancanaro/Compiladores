@@ -9,11 +9,11 @@
 #include <vector>
 #include <stack>
 
-#include "Logger_Base.hpp"
+#include "Model/Parser/Asm/BipDefinitions.hpp"
+#include "LoggerBase.hpp"
 #include "SemanticError.hpp"
 #include "SemanticTable.hpp"
 #include "Token.hpp"
-
 
 namespace wpl {
 
@@ -133,6 +133,11 @@ private:
     auto issue_warning(std::string && message) noexcept -> void;
     auto issue_error(std::string && message) -> void;
 
+    // @TODO separate asm generation
+    auto bip_asm_data(Name const& name) -> void;
+    auto bip_asm_text(std::string const& op, std::string const& operand) -> void;
+
+    bip_asm::BIP_Program compiled {};
     std::unique_ptr<Logger_Base> logger;
 };
 

@@ -41,7 +41,7 @@ HEADERS += \
     Model/Parser/Analysers/Constants.hpp \
     Model/Parser/Analysers/Lexical.hpp \
     Model/Parser/Analysers/LexicalError.hpp \
-    Model/Parser/Analysers/Logger_Base.hpp \
+    Model/Parser/Analysers/LoggerBase.hpp \
     Model/Parser/Analysers/OperatorDefinitions.hpp \
     Model/Parser/Analysers/SemanticTable.hpp \
     Model/Parser/Analysers/Semantic.hpp \
@@ -52,6 +52,7 @@ HEADERS += \
     Model/Parser/Analysers/SyntaticError.hpp \
     Model/Parser/Analysers/Token.hpp \
     Model/Parser/Analysers/TypeDefinitions.hpp \
+    Model/Parser/Asm/BipDefinitions.hpp \
     Model/Parser/Parser.hpp \
     View/CodeEditor/CodeEditor.hpp \
     View/AnalysisWindow.hpp \

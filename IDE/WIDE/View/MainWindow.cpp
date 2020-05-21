@@ -171,8 +171,7 @@ void Main_Window::dispatchCodeAnalysis()
     if (this->analysisWindow) {
         this->analysisWindow->setHidden(false);
         this->analysisWindow->activateWindow();
-    }
-    else {
+    } else {
         this->analysisWindow = new AnalysisWindow(this);
         this->analysisWindow->show();
     }
@@ -183,8 +182,7 @@ void Main_Window::dispatch_names_view()
     if (this->name_table_window) {
         this->name_table_window->setHidden(false);
         this->name_table_window->activateWindow();
-    }
-    else {
+    } else {
         this->name_table_window = new Name_Table_Window(this);
         this->name_table_window->show();
     }

@@ -109,4 +109,11 @@ enum class Binary_Expression_Handling_Suffix {
     ARITHMETIC_EXP = 35,
 };
 
+enum class Vector_Constructor_Suffix {
+    BEGIN_FILLED_DECL = 0,
+    END_FILLED_DECL = 1,
+    PUSH_EMPTY = 2,
+    PUSH_VALUE = 3
+};
+
 #endif // ACTIONDEFINITIONS_HPP

@@ -35,6 +35,8 @@ struct Type {
     bool pointer {};
     bool ref {};
     bool constant {};
+
+    size_t length {};
 };
 
 namespace type_traits {
