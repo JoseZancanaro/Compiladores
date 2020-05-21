@@ -58,16 +58,20 @@ enum class Value_Provider_Suffix {
     PUSH_DOUBLE = 1,
     PUSH_BOOL = 2,
     PUSH_CHAR = 3,
-    PUSH_STRING = 4
+    PUSH_STRING = 4,
+    PUSH_INT_BIN = 5,
+    PUSH_INT_HEX = 6
 };
 
 enum class Value_Access_Suffix {
     NAME_ACCESS = 0,
-    LITERAL_ACCESS = 1
+    LITERAL_ACCESS = 1,
+    ACK_BINARY_SECOND_OPERAND = 2
 };
 
 enum class Assignment_Suffix {
-    ASSIGN = 0
+    FETCH_ADDRESS = 0,
+    ASSIGN = 1
 };
 
 enum class Unary_Expression_Handling_Suffix {

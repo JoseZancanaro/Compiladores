@@ -4,7 +4,7 @@
 #include <queue>
 #include <QTreeWidget>
 
-AnalysisWindow::AnalysisWindow(QWidget *parent) :
+Analysis_Window::Analysis_Window(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AnalysisWindow)
 {
@@ -14,12 +14,12 @@ AnalysisWindow::AnalysisWindow(QWidget *parent) :
     connect(ui->btnClose, SIGNAL(clicked(bool)), this, SLOT(dispatchClose()));
 }
 
-AnalysisWindow::~AnalysisWindow()
+Analysis_Window::~Analysis_Window()
 {
     delete ui;
 }
 
-void AnalysisWindow::setTree(Composite<std::string> ast)
+void Analysis_Window::setTree(Composite<std::string> ast)
 {
     using TreePair = std::pair<Composite<std::string>, QTreeWidgetItem*>;
     std::queue<TreePair> builder;
@@ -47,7 +47,7 @@ void AnalysisWindow::setTree(Composite<std::string> ast)
     this->ui->treeWidget->insertTopLevelItem(0, rootWidget);
 }
 
-void AnalysisWindow::dispatchClose()
+void Analysis_Window::dispatchClose()
 {
     this->hide();
 }

@@ -24,10 +24,12 @@ SOURCES += \
     Model/Parser/Analysers/Syntactic.cpp \
     Model/Parser/Analysers/TypeDefinitions.cpp \
     Model/Parser/Parser.cpp \
+    View/AssemblerWindow.cpp \
+    View/CodeEditor/BIP_ASM_SyntaxHighlighter.cpp \
     View/CodeEditor/CodeEditor.cpp \
     View/AnalysisWindow.cpp \
-    View/CodeEditor/LineNumberArea.cpp \
-    View/CodeEditor/SyntaxHighlighter.cpp \
+    View/CodeEditor/Line_Number_Area.cpp \
+    View/CodeEditor/WPLSyntaxHighlighter.cpp \
     View/MainWindow.cpp \
     View/NameTableWindow.cpp \
     main.cpp
@@ -54,15 +56,18 @@ HEADERS += \
     Model/Parser/Analysers/TypeDefinitions.hpp \
     Model/Parser/Asm/BipDefinitions.hpp \
     Model/Parser/Parser.hpp \
+    View/AssemblerWindow.hpp \
+    View/CodeEditor/BIP_ASM_SyntaxHighlighter.hpp \
     View/CodeEditor/CodeEditor.hpp \
     View/AnalysisWindow.hpp \
-    View/CodeEditor/LineNumberArea.hpp \
-    View/CodeEditor/SyntaxHighlighter.hpp \
+    View/CodeEditor/Line_Number_Area.hpp \
+    View/CodeEditor/WPLSyntaxHighlighter.hpp \
     View/MainWindow.hpp \
     View/NameTableWindow.hpp
 
 FORMS += \
     View/AnalysisWindow.ui \
+    View/AssemblerWindow.ui \
     View/MainWindow.ui \
     View/NameTableWindow.ui
 

@@ -1,6 +1,8 @@
 #ifndef OPERATOR_DEFINITIONS_HPP
 #define OPERATOR_DEFINITIONS_HPP
 
+#include <string>
+
 namespace wpl {
 
 enum class Operator {

@@ -2,9 +2,10 @@
 #include "ui_MainWindow.h"
 
 #include "CodeEditor/CodeEditor.hpp"
-#include "CodeEditor/SyntaxHighlighter.hpp"
+#include "CodeEditor/WPLSyntaxHighlighter.hpp"
 #include "AnalysisWindow.hpp"
 #include "NameTableWindow.hpp"
+#include "AssemblerWindow.hpp"
 
 #include <iostream>
 
@@ -33,14 +34,15 @@ namespace detail {
 Main_Window::Main_Window(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , codeEditor(new CodeEditor(this))
+    , codeEditor(new Code_Editor(this))
     , analysisWindow(nullptr)
     , name_table_window(nullptr)
+    , assembler_window(new Assembler_Window)
     , current({})
 {
     ui->setupUi(this);
 
-    syntaxHighlighter = new SyntaxHighlighter(codeEditor->document());
+    syntaxHighlighter = new WPL_Syntax_Highlighter(codeEditor->document());
 
     codeEditor->setFont(QFont("Consolas", 11, QFont::Normal));
 
@@ -64,6 +66,7 @@ Main_Window::Main_Window(QWidget *parent)
     /* Actions: Tools */
     connect(ui->actionCodeAnalysis, SIGNAL(triggered(bool)), this, SLOT(dispatchCodeAnalysis()));
     connect(ui->action_names_view, SIGNAL(triggered(bool)), this, SLOT(dispatch_names_view()));
+    connect(ui->action_bip_assembly, SIGNAL(triggered(bool)), this, SLOT(dispatch_bip_assembly_view()));
 
 
     /* Buttons */
@@ -136,7 +139,7 @@ void Main_Window::dispatchRun()
     std::string input = this->codeEditor->toPlainText().toStdString();
     Parser parser(input);
 
-    auto [issues, success, tree, names] = parser.parse();
+    auto [issues, success, tree, names, program] = parser.parse();
 
     this->ui->list_issues->clear();
 
@@ -164,6 +167,8 @@ void Main_Window::dispatchRun()
     if (this->name_table_window) {
         this->name_table_window->set_name_table(names);
     }
+
+    this->assembler_window->set_program(program);
 }
 
 void Main_Window::dispatchCodeAnalysis()
@@ -172,7 +177,7 @@ void Main_Window::dispatchCodeAnalysis()
         this->analysisWindow->setHidden(false);
         this->analysisWindow->activateWindow();
     } else {
-        this->analysisWindow = new AnalysisWindow(this);
+        this->analysisWindow = new Analysis_Window(this);
         this->analysisWindow->show();
     }
 }
@@ -186,4 +191,10 @@ void Main_Window::dispatch_names_view()
         this->name_table_window = new Name_Table_Window(this);
         this->name_table_window->show();
     }
+}
+
+void Main_Window::dispatch_bip_assembly_view()
+{
+    this->assembler_window->show();
+    this->assembler_window->activateWindow();
 }

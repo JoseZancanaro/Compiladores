@@ -3,14 +3,14 @@
 
 #include <QPlainTextEdit>
 
-class LineNumberArea;
+class Line_Number_Area;
 
-class CodeEditor : public QPlainTextEdit
+class Code_Editor : public QPlainTextEdit
 {
     Q_OBJECT
 
 public:
-    CodeEditor(QWidget *parent = nullptr);
+    Code_Editor(QWidget *parent = nullptr);
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
     int lineNumberAreaWidth();
@@ -24,7 +24,7 @@ private slots:
     void updateLineNumberArea(const QRect &rect, int dy);
 
 private:
-    LineNumberArea *lineNumberArea;
+    Line_Number_Area *lineNumberArea;
 };
 
 #endif // CODEEDITOR_HPP

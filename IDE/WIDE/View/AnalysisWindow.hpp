@@ -8,13 +8,13 @@ namespace Ui {
 class AnalysisWindow;
 }
 
-class AnalysisWindow : public QDialog
+class Analysis_Window : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit AnalysisWindow(QWidget *parent = nullptr);
-    ~AnalysisWindow();
+    explicit Analysis_Window(QWidget *parent = nullptr);
+    ~Analysis_Window();
 
     void setTree(Composite<std::string> ast);
 

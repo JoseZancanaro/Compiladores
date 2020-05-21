@@ -23,6 +23,7 @@ class Parser
         bool success;
         std::optional<Composite<std::string>> tree;
         Name_Table name_table {};
+        bip_asm::BIP_Program program;
     };
 
 public:

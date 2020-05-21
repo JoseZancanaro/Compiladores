@@ -17,11 +17,11 @@ Parser::Parser(std::string const& input, std::unique_ptr<Logger_Base> logger)
 auto Parser::parse() -> Parser_Context {
     try {
         syntactic.parse(&lex, &semantic);
-        return Parser_Context{semantic.get_issues(), true, syntactic.get_tree().top(), semantic.get_name_table() };
+        return Parser_Context{semantic.get_issues(), true, syntactic.get_tree().top(), semantic.get_name_table(), semantic.get_program() };
     } catch (std::exception const& e) {
-        return Parser_Context{{{ Issue::Issue_Type::ERROR, e.what() }}, false, {}, semantic.get_name_table() };
+        return Parser_Context{{{ Issue::Issue_Type::ERROR, e.what() }}, false, {}, semantic.get_name_table(), semantic.get_program() };
     } catch (wpl::Analysis_Error const& e) {
-        return Parser_Context{semantic.get_issues(), false, {}, semantic.get_name_table() };
+        return Parser_Context{semantic.get_issues(), false, {}, semantic.get_name_table(), semantic.get_program() };
     }
 }
 

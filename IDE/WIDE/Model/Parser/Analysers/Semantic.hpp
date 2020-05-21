@@ -41,6 +41,7 @@ struct Name_Provider {
 
     bool function_call {};
     bool subscript_access {};
+    size_t subscript_position {};
 };
 
 struct Call_Context {
@@ -105,6 +106,7 @@ public:
 
     auto get_name_table() const -> Name_Table;
     auto get_issues() const -> std::vector<Issue>;
+    auto get_program() const -> bip_asm::BIP_Program;
 
 private:
     auto do_scope_action(int suffix, Token const* token) -> void;
@@ -133,10 +135,16 @@ private:
     auto issue_warning(std::string && message) noexcept -> void;
     auto issue_error(std::string && message) -> void;
 
+    struct GenerationContext {
+        std::stack<bool> binary_second_operand {};
+        std::stack<std::string> operators {};
+    };
+
     // @TODO separate asm generation
     auto bip_asm_data(Name const& name) -> void;
     auto bip_asm_text(std::string const& op, std::string const& operand) -> void;
 
+    GenerationContext gc {};
     bip_asm::BIP_Program compiled {};
     std::unique_ptr<Logger_Base> logger;
 };

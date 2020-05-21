@@ -6,34 +6,6 @@
 #include <sstream>
 #include <tuple>
 
-namespace wpl::bip_asm {
-
-auto format_program(BIP_Program const& program) -> std::string {
-    std::stringstream ss;
-
-    // Data
-    ss << ".data" << '\n';
-
-    for (auto const& decl : program.data) {
-        ss << '\t' << decl.id << ": ";
-
-        ss << decl.default_value.front();
-
-        for (size_t i = 1; i < decl.default_value.size(); ++i) {
-            ss << ", " << decl.default_value.at(i);
-        }
-
-        ss << '\n';
-    }
-
-    // Text
-    ss << ".text" << '\n';
-
-    return ss.str();
-}
-
-}
-
 namespace wpl {
 
 Semantic::Semantic(std::unique_ptr<Logger_Base> && p_logger)
@@ -42,12 +14,16 @@ Semantic::Semantic(std::unique_ptr<Logger_Base> && p_logger)
     // Push STD lib
     this->name_table.push_back({ 0, "print", { Type_Name::VOID }, { Type_Name::VOID }, true, true, true, 0, false, true });
     this->name_table.push_back({ 0, "read", { Type_Name::INTEGER }, { Type_Name::INTEGER }, true, true, true, 0, false, true });
+
+    this->gc.binary_second_operand.push(false);
 }
 
 auto Semantic::execute_action(int action, Token const* token) -> void {
     //@TODO enum class
 
     auto [ prefix, suffix ] = decode_action(action);
+
+    std::cout << "[" << prefix << ", " << suffix << "]" << std::endl;
 
     switch (prefix) {
         case 0: {
@@ -92,6 +68,8 @@ auto Semantic::execute_action(int action, Token const* token) -> void {
                       << "Suffix" << suffix << std::endl;
         }
     }
+
+    std::cout << "[end]" << std::endl;
 }
 
 auto Semantic::do_scope_action(int suffix, [[maybe_unused]] Token const* token) -> void {
@@ -113,7 +91,7 @@ auto Semantic::do_scope_action(int suffix, [[maybe_unused]] Token const* token) 
             this->verify_scope_lifetime(this->scopes.top());
             this->scopes.pop();
 
-            std::cout << bip_asm::format_program(this->compiled) << std::endl;
+            this->bip_asm_text("HLT", "0");
 
             break;
         }
@@ -197,6 +175,8 @@ auto Semantic::do_declare_action(int suffix, Token const* token) -> void {
 
             this->try_put_name(name);
 
+            this->bip_asm_text("STO", name.id);
+
             break;
         }
         case Declare_Suffix::PUSH_UNINITIALIZED: {
@@ -274,9 +254,19 @@ auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
             this->name_providers.push({ token->get_lexeme() });
             break;
         }
-        case Name_Provider_Suffix::SET_SUBSCRIPT_ACCESS:
-        case Name_Provider_Suffix::SET_SUBSCRIPT_INDEX: {
+        case Name_Provider_Suffix::SET_SUBSCRIPT_ACCESS: {
             this->name_providers.top().subscript_access = true;
+
+            if (this->gc.binary_second_operand.top()) {
+                this->bip_asm_text("STO", "1001");
+            }
+
+            this->gc.binary_second_operand.push(false);
+
+            break;
+        }
+        case Name_Provider_Suffix::SET_SUBSCRIPT_INDEX: {
+            this->gc.binary_second_operand.pop();
             break;
         }
         case Name_Provider_Suffix::SET_NAME_FUNCTION_ID: {
@@ -335,6 +325,43 @@ auto Semantic::do_value_provider_action(int suffix, [[maybe_unused]] Token const
             this->value_providers.push({ Type_Name::STRING });
             break;
         }
+        case Value_Provider_Suffix::PUSH_INT_BIN: {
+            this->value_providers.push({ Type_Name::INTEGER });
+            break;
+        }
+        case Value_Provider_Suffix::PUSH_INT_HEX: {
+            this->value_providers.push({ Type_Name::INTEGER });
+            break;
+        }
+    }
+}
+
+auto get_operator_instruction(std::string const& op_sign) -> std::string {
+    if (op_sign == "+") {
+        return "ADD";
+    } else if (op_sign == "-") {
+        return "SUB";
+    } else if (op_sign == "&") {
+        return "AND";
+    } else if (op_sign == "|") {
+        return "OR";
+    } else if (op_sign == "~") {
+        return "NOT";
+    } else if (op_sign == "<<") {
+        return "SLL";
+    } else if (op_sign == ">>") {
+        return "SRL";
+    } else if (op_sign == "^") {
+        return "XOR";
+    }
+    return "HLT";
+}
+
+auto get_operator_imediate_candidate(std::string const& op) -> std::string {
+    if (op == "ADD" || op == "SUB" || op == "AND" || op == "OR" || op == "LD" || op == "XOR") {
+        return op + "I";
+    } else {
+        return op;
     }
 }
 
@@ -368,6 +395,39 @@ auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* 
                 } else {
                     this->expression_nodes.push({ name->inferred });
                 }
+
+                if (!this->gc.binary_second_operand.top()) {
+                    if (name->function && provider.function_call) {
+                        if (provider.name_id == "read") {
+                            this->bip_asm_text("LD", "$in_port");
+                        } else if (provider.name_id == "print") {
+                            this->bip_asm_text("STO", "$out_port");
+                        }
+                    } else if (provider.subscript_access) {
+                        this->bip_asm_text("STO", "$indr");
+                        this->bip_asm_text("LDV", name->id);
+                    } else {
+                        this->bip_asm_text("LD", name->id);
+                    }
+                } else {
+                    if (name->function && provider.function_call) {
+                        if (provider.name_id == "read") {
+                            this->bip_asm_text("STO", "1001");
+                            this->bip_asm_text("LD", "$in_port");
+                            this->bip_asm_text(this->gc.operators.top(), "1001");
+                        }
+                    } else if (provider.subscript_access) {
+                        this->bip_asm_text("STO", "$indr");
+                        this->bip_asm_text("LDV", name->id);
+                        this->bip_asm_text("STO", "1002");
+                        this->bip_asm_text("LD", "1001");
+                        this->bip_asm_text(this->gc.operators.top(), "1002");
+                    } else {
+                        this->bip_asm_text(this->gc.operators.top(), name->id);
+                    }
+                    this->gc.binary_second_operand.top() = false;
+                    this->gc.operators.pop();
+                }
             }
 
             break;
@@ -377,12 +437,39 @@ auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* 
             this->value_providers.pop();
 
             this->expression_nodes.push({ provider.type });
+
+            if (!this->gc.binary_second_operand.top()) {
+                this->bip_asm_text("LDI", token->get_lexeme());
+            } else {
+                this->bip_asm_text(get_operator_imediate_candidate(this->gc.operators.top()), token->get_lexeme());
+                this->gc.binary_second_operand.top() = false;
+                this->gc.operators.pop();
+            }
+
+            break;
+        }
+        case Value_Access_Suffix::ACK_BINARY_SECOND_OPERAND: {
+            this->gc.binary_second_operand.top() = true;
+            this->gc.operators.push(get_operator_instruction(token->get_lexeme()));
+
+            break;
         }
     }
 }
 
 auto Semantic::do_assignment_action(int suffix, [[maybe_unused]] Token const* token) -> void {
     switch (Assignment_Suffix(suffix)) {
+        case Assignment_Suffix::FETCH_ADDRESS: {
+            auto provider = this->name_providers.top();
+
+            if (auto name_opt = this->try_get_name(provider.name_id); name_opt.has_value()) {
+                if (provider.subscript_access) {
+                    this->bip_asm_text("STO", "1000");
+                }
+            }
+
+            break;
+        }
         case Assignment_Suffix::ASSIGN: {
             auto provider = this->name_providers.top();
             this->name_providers.pop();
@@ -395,6 +482,23 @@ auto Semantic::do_assignment_action(int suffix, [[maybe_unused]] Token const* to
                 name->initialized = true;
 
                 this->sanitize_type_compatibility(name, expression_node.type);
+
+                if (provider.subscript_access) {
+                    // Save RVALUE
+                    this->bip_asm_text("STO", "1001");
+
+                    // Restore subscript index and store it in $indr
+                    this->bip_asm_text("LD", "1000");
+                    this->bip_asm_text("STO", "$indr");
+
+                    // Restore RVALUE
+                    this->bip_asm_text("LD", "1001");
+
+                    // Store acc in name at $indr
+                    this->bip_asm_text("STOV", name->id);
+                } else {
+                    this->bip_asm_text("STO", name->id);
+                }
             }
 
             break;
@@ -679,6 +783,10 @@ auto Semantic::get_issues() const -> std::vector<Issue> {
     return this->issues;
 }
 
+auto Semantic::get_program() const -> bip_asm::BIP_Program {
+    return this->compiled;
+}
+
 auto Semantic::infer_any_type(Type const& type, Expression_Node const& node) -> Type {
     return { node.type.name, node.type.array, type.pointer, type.ref, type.constant };
 }
@@ -697,11 +805,16 @@ auto Semantic::issue_error(std::string && message) -> void {
 auto Semantic::bip_asm_data(Name const& name) -> void {
     if (!name.function) {
         if (name.inferred.array) {
-            this->compiled.data.push_back({ name.id, std::vector<int>(name.inferred.length, 0) });
+            auto array_length = name.inferred.length > 1 ? name.inferred.length : 2;
+            this->compiled.data.push_back({ name.id, std::vector<int>(array_length, 0) });
         } else {
             this->compiled.data.push_back({ name.id, {0} });
         }
     }
+}
+
+auto Semantic::bip_asm_text(std::string const& op, std::string const& operand) -> void {
+    this->compiled.text.push_back({ op, operand });
 }
 
 } //namespace wpl

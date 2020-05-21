@@ -109,11 +109,11 @@ const int ACCEPT = 3;
 const int GO_TO  = 4;
 const int ERROR  = 5;
 
-extern const int PARSER_TABLE[337][1064][2];
+extern const int PARSER_TABLE[357][1064][2];
 
 extern const int PRODUCTIONS[166][2];
 
-extern const char *PARSER_ERROR[337];
+extern const char *PARSER_ERROR[357];
 
 } //namespace wpl
 

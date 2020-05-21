@@ -295,13 +295,13 @@ DEL_RCB : "}"
 
 // Contant values, vector constructor
 <literal> ::= <literal_primitive> | <vector_constructor> ;
-<literal_primitive> ::= VAL_INT #0700 | VAL_INT_BIN #0700 | VAL_INT_HEX #0700 | VAL_REAL #0701 | VAL_BOOL_TRUE #0702 | VAL_BOOL_FALSE #0702 | VAL_CHAR #0703 | VAL_STR #0704 ;
+<literal_primitive> ::= VAL_INT #0700 | VAL_INT_BIN #0705 | VAL_INT_HEX #0706 | VAL_REAL #0701 | VAL_BOOL_TRUE #0702 | VAL_BOOL_FALSE #0702 | VAL_CHAR #0703 | VAL_STR #0704 ;
 
 <vector_constructor> ::= DEL_LSB #0900 <vector_constructor_values> DEL_RSB #0901 | KW_VECTOR #0902 ;
 <vector_constructor_values> ::= <expression> #0903 DEL_COMMA <vector_constructor_values> | <expression> #0903 ;
 
 <assignment_list> ::= <assignment> DEL_COMMA <assignment_list> | <assignment> ;
-<assignment> ::= <name_var_provider> OP_ATT <expression> #0600 ;
+<assignment> ::= <name_var_provider> OP_ATT #0600 <expression> #0601 ;
 
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
@@ -357,26 +357,26 @@ DEL_RCB : "}"
 
 <precedence_l13> ::= î ;
 		  
-<precedence_l12> ::= <precedence_l12> OP_OR      <precedence_l11> #0800 | <precedence_l11> ;   // ||
-<precedence_l11> ::= <precedence_l11> OP_AND     <precedence_l10> #0801 | <precedence_l10> ;   // &&
-<precedence_l10> ::= <precedence_l10> OP_BW_OR   <precedence_l09> #0810 | <precedence_l09> ;   // |
-<precedence_l09> ::= <precedence_l09> OP_BW_XOR  <precedence_l08> #0811 | <precedence_l08> ;   // ^
-<precedence_l08> ::= <precedence_l08> OP_BW_AND  <precedence_l07> #0812 | <precedence_l07> ;   // &
-<precedence_l07> ::= <precedence_l07> OP_EQ      <precedence_l06> #0820 |			     // == /=
-                       <precedence_l07> OP_NEQ     <precedence_l06> #0821 | <precedence_l06> ;
-<precedence_l06> ::= <precedence_l06> OP_GT      <precedence_l05> #0822 |		              // > < >= <=
-                       <precedence_l06> OP_LT      <precedence_l05> #0823 |
-                       <precedence_l06> OP_GTE     <precedence_l05> #0824 |
-                       <precedence_l06> OP_LTE     <precedence_l05> #0825 | <precedence_l05> ;
-<precedence_l05> ::= <precedence_l05> OP_BW_SR   <precedence_l04> #0813 |			     // >> <<
-                       <precedence_l05> OP_BW_SL   <precedence_l04> #0814 | <precedence_l04> ;
-<precedence_l04> ::= <precedence_l04> OP_ADD     <precedence_l03> #0830 |			     // + -
-                       <precedence_l04> OP_SUB     <precedence_l03> #0831 | <precedence_l03> ;
-<precedence_l03> ::= <precedence_l03> OP_MULT    <precedence_l02> #0832 |			     // * / %
-                       <precedence_l03> OP_DIV     <precedence_l02> #0833 |
-                       <precedence_l03> OP_REM     <precedence_l02> #0834 | <precedence_l02> ;
-<precedence_l02> ::= <precedence_l02> OP_EXP     <precedence_l01> #0835 | <precedence_l01> ;   // **
-<precedence_l01> ::= OP_ADD <value> #0890 | OP_SUB     <value> #0891 |			     // unary (+ - ! ~ ++ --) (expr)
+<precedence_l12> ::= <precedence_l12> OP_OR     #0502 <precedence_l11> #0800 | <precedence_l11> ;   // ||
+<precedence_l11> ::= <precedence_l11> OP_AND    #0502 <precedence_l10> #0801 | <precedence_l10> ;   // &&
+<precedence_l10> ::= <precedence_l10> OP_BW_OR  #0502 <precedence_l09> #0810 | <precedence_l09> ;   // |
+<precedence_l09> ::= <precedence_l09> OP_BW_XOR #0502 <precedence_l08> #0811 | <precedence_l08> ;   // ^
+<precedence_l08> ::= <precedence_l08> OP_BW_AND #0502 <precedence_l07> #0812 | <precedence_l07> ;   // &
+<precedence_l07> ::= <precedence_l07> OP_EQ     #0502 <precedence_l06> #0820 |			// == /=
+                       <precedence_l07> OP_NEQ    #0502 <precedence_l06> #0821 | <precedence_l06> ;
+<precedence_l06> ::= <precedence_l06> OP_GT     #0502 <precedence_l05> #0822 |		         // > < >= <=
+                       <precedence_l06> OP_LT     #0502 <precedence_l05> #0823 |
+                       <precedence_l06> OP_GTE    #0502 <precedence_l05> #0824 |
+                       <precedence_l06> OP_LTE    #0502 <precedence_l05> #0825 | <precedence_l05> ;
+<precedence_l05> ::= <precedence_l05> OP_BW_SR  #0502 <precedence_l04> #0813 |			// >> <<
+                       <precedence_l05> OP_BW_SL  #0502 <precedence_l04> #0814 | <precedence_l04> ;
+<precedence_l04> ::= <precedence_l04> OP_ADD    #0502 <precedence_l03> #0830 |			// + -
+                       <precedence_l04> OP_SUB    #0502 <precedence_l03> #0831 | <precedence_l03> ;
+<precedence_l03> ::= <precedence_l03> OP_MULT   #0502 <precedence_l02> #0832 |			// * / %
+                       <precedence_l03> OP_DIV    #0502 <precedence_l02> #0833 |
+                       <precedence_l03> OP_REM    #0502 <precedence_l02> #0834 | <precedence_l02> ;
+<precedence_l02> ::= <precedence_l02> OP_EXP    #0502 <precedence_l01> #0835 | <precedence_l01> ;   // **
+<precedence_l01> ::= OP_ADD <value> #0890 | OP_SUB     <value> #0891 |			         // unary (+ - ! ~ ++ --) (expr)
                        OP_NOT <value> #0892 | OP_BW_COMP <value> #0893 |
                        OP_INC <value> #0894 | OP_DEC     <value> #0895 | 
 		     <value> #0896 OP_INC | <value> #0897 OP_DEC     |

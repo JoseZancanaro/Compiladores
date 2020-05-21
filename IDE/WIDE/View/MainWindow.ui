@@ -261,6 +261,7 @@
     </property>
     <addaction name="actionCodeAnalysis"/>
     <addaction name="action_names_view"/>
+    <addaction name="action_bip_assembly"/>
    </widget>
    <widget class="QMenu" name="menuWindow">
     <property name="title">
@@ -360,6 +361,11 @@
   <action name="action_names_view">
    <property name="text">
     <string>Name Table</string>
+   </property>
+  </action>
+  <action name="action_bip_assembly">
+   <property name="text">
+    <string>BIP Assembly</string>
    </property>
   </action>
  </widget>
