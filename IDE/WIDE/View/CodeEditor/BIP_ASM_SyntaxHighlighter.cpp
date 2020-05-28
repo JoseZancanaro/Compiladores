@@ -15,8 +15,9 @@ BIP_ASM_Syntax_Highlighter::BIP_ASM_Syntax_Highlighter(QTextDocument *parent)
         QStringLiteral("\\bBLE\\b"), QStringLiteral("\\bJMP\\b"), QStringLiteral("\\bAND\\b"),
         QStringLiteral("\\bANDI\\b"), QStringLiteral("\\bOR\\b"), QStringLiteral("\\bORI\\b"),
         QStringLiteral("\\bNOT\\b"), QStringLiteral("\\bSLL\\b"), QStringLiteral("\\bSRL\\b"),
-        QStringLiteral("\\bSTOV\\b"), QStringLiteral("\\bLDV\\b"), QStringLiteral("\\bHLT\\b"),
-        QStringLiteral("\\bCALL\\b"), QStringLiteral("\\bRETURN\\b")
+        QStringLiteral("\\bXOR\\b"), QStringLiteral("\\bXORI\\b"), QStringLiteral("\\bSTOV\\b"),
+        QStringLiteral("\\bLDV\\b"), QStringLiteral("\\bHLT\\b"), QStringLiteral("\\bCALL\\b"),
+        QStringLiteral("\\bRETURN\\b")
     };
     for (const QString &pattern : instructionPatterns) {
         rule.pattern = QRegularExpression(pattern);

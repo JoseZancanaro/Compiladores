@@ -118,6 +118,7 @@ private:
     auto do_value_access_action(int suffix, Token const* token) -> void;
     auto do_assignment_action(int suffix, Token const* token) -> void;
     auto do_expression_handling_action(int suffix, Token const* token) -> void;
+    auto do_vector_constructor_action(int suffix, Token const* token) -> void;
 
     auto try_get_name(std::string const& id) -> std::optional<Name*>;
     auto try_put_name(Name const& name) -> void;
@@ -138,6 +139,9 @@ private:
     struct GenerationContext {
         std::stack<bool> binary_second_operand {};
         std::stack<std::string> operators {};
+        std::size_t vector_index {};
+        std::stack<std::string> name_ids {};
+        bool vector_constructed {};
     };
 
     // @TODO separate asm generation

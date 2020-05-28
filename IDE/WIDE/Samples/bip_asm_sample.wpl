@@ -1,12 +1,9 @@
 def main() -> Integer {
-    Integer[5] a;
+    Integer[5] a = [5, 0, 6, 0, 0];
     Integer[1] b;
     Integer i = 1;
 
     Integer n2e7 = 255;
-
-    a[0] = 5;
-    a[i + 1] = 6;
 
     b[0] = a[0] + a[i + 1];
     print(b[0]);

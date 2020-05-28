@@ -62,6 +62,10 @@ auto Semantic::execute_action(int action, Token const* token) -> void {
             this->do_expression_handling_action(suffix, token);
             break;
         }
+        case 9: {
+            this->do_vector_constructor_action(suffix, token);
+            break;
+        }
         default: {
             std::cout << "Uncaught action with type "
                       << "Prefix" << prefix
@@ -155,6 +159,7 @@ auto Semantic::do_declare_action(int suffix, Token const* token) -> void {
     switch (Declare_Suffix(suffix)) {
         case Declare_Suffix::PUSH_NAME_ID: {
             this->names.push({ this->scopes.top(), token->get_lexeme(), this->types.top(), this->types.top() });
+            this->gc.name_ids.push(token->get_lexeme());
 
             this->sanitize_type(this->types.top());
 
@@ -175,7 +180,9 @@ auto Semantic::do_declare_action(int suffix, Token const* token) -> void {
 
             this->try_put_name(name);
 
-            this->bip_asm_text("STO", name.id);
+            if (!name.type.array) {
+                this->bip_asm_text("STO", name.id);
+            }
 
             break;
         }
@@ -252,6 +259,7 @@ auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
     switch (Name_Provider_Suffix(suffix)) {
         case Name_Provider_Suffix::SET_NAME_VAR_ID: {
             this->name_providers.push({ token->get_lexeme() });
+            this->gc.name_ids.push(token->get_lexeme());
             break;
         }
         case Name_Provider_Suffix::SET_SUBSCRIPT_ACCESS: {
@@ -433,18 +441,23 @@ auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* 
             break;
         }
         case Value_Access_Suffix::LITERAL_ACCESS: {
-            auto provider = this->value_providers.top();
-            this->value_providers.pop();
-
-            this->expression_nodes.push({ provider.type });
-
-            if (!this->gc.binary_second_operand.top()) {
-                this->bip_asm_text("LDI", token->get_lexeme());
+            if (this->gc.vector_constructed) {
+                this->gc.vector_constructed = false;
             } else {
-                this->bip_asm_text(get_operator_imediate_candidate(this->gc.operators.top()), token->get_lexeme());
-                this->gc.binary_second_operand.top() = false;
-                this->gc.operators.pop();
+                auto provider = this->value_providers.top();
+                this->value_providers.pop();
+
+                this->expression_nodes.push({ provider.type });
+
+                if (!this->gc.binary_second_operand.top()) {
+                    this->bip_asm_text("LDI", token->get_lexeme());
+                } else {
+                    this->bip_asm_text(get_operator_imediate_candidate(this->gc.operators.top()), token->get_lexeme());
+                    this->gc.binary_second_operand.top() = false;
+                    this->gc.operators.pop();
+                }
             }
+
 
             break;
         }
@@ -650,6 +663,46 @@ auto Semantic::do_expression_handling_action(int suffix, [[maybe_unused]] Token 
             default: {
                 std::cerr << "Uncaught operator handling " << suffix << std::endl;
             }
+        }
+    }
+}
+
+auto Semantic::do_vector_constructor_action(int suffix, [[maybe_unused]] Token const* token) -> void {
+    std::cout << "Aqui estou eu mais um dia sobre o olhar sanguinario do " << this->gc.name_ids.top() << std::endl;
+
+    switch (Vector_Constructor_Suffix(suffix)) {
+        case Vector_Constructor_Suffix::BEGIN_FILLED_DECL: {
+            this->gc.vector_index = 0;
+            break;
+        }
+        case Vector_Constructor_Suffix::END_FILLED_DECL: {
+            this->gc.name_ids.pop();
+            this->gc.vector_constructed = true;
+
+            break;
+        }
+        case Vector_Constructor_Suffix::PUSH_EMPTY: {
+            this->issue_error(
+                detail::to_string("Can't initialize an empty array.")
+            ); // @TODO Move to class scope, enhance Logger class
+
+            break;
+        }
+        case Vector_Constructor_Suffix::PUSH_VALUE: {
+            // Save RVALUE
+            this->bip_asm_text("STO", "1001");
+
+            // Restore subscript index and store it in $indr
+            this->bip_asm_text("LDI", std::to_string(this->gc.vector_index++));
+            this->bip_asm_text("STO", "$indr");
+
+            // Restore RVALUE
+            this->bip_asm_text("LD", "1001");
+
+            // Store acc in name at $indr
+            this->bip_asm_text("STOV", this->gc.name_ids.top());
+
+            break;
         }
     }
 }

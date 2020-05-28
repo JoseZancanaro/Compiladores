@@ -203,3 +203,4 @@ Double[] vetor;
 | 06 | Atribuição |
 | 07 | Provedor de valores |
 | 08 | Solução de Expressão |
+| 09 | Construtor de Vetores |

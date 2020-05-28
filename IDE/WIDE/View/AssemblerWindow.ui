@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>BIP Assembly</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources/main.qrc">
+    <normaloff>:/icon/snowflake.ico</normaloff>:/icon/snowflake.ico</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QVBoxLayout" name="main_section">
@@ -51,6 +55,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources/main.qrc"/>
+ </resources>
  <connections/>
 </ui>
