@@ -119,6 +119,7 @@ private:
     auto do_assignment_action(int suffix, Token const* token) -> void;
     auto do_expression_handling_action(int suffix, Token const* token) -> void;
     auto do_vector_constructor_action(int suffix, Token const* token) -> void;
+    auto do_flow_control_action(int suffix, Token const* token) -> void;
 
     auto try_get_name(std::string const& id) -> std::optional<Name*>;
     auto try_put_name(Name const& name) -> void;
@@ -141,12 +142,18 @@ private:
         std::stack<std::string> operators {};
         std::size_t vector_index {};
         std::stack<std::string> name_ids {};
+        std::stack<std::string> labels {};
+        size_t label_index {};
+        std::stack<std::string> flow_control_operators {};
+        bool is_flow_control {};
         bool vector_constructed {};
     };
 
-    // @TODO separate asm generation
+    // @TODO separate asm generation, array scope declaration
     auto bip_asm_data(Name const& name) -> void;
     auto bip_asm_text(std::string const& op, std::string const& operand) -> void;
+    auto bip_asm_hash_name(Name const* name) -> std::string;
+    auto bip_asm_create_label() -> std::string;
 
     GenerationContext gc {};
     bip_asm::BIP_Program compiled {};

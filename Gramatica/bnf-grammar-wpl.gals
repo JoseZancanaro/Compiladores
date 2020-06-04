@@ -267,10 +267,10 @@ DEL_RCB : "}"
 
 <program> ::= #0000 <definition_list> #0001;
 
-<definition_list> ::= <definition> <definition_list> | Ã® ;
+<definition_list> ::= <definition> <definition_list> | î ;
 <definition> ::= <declaration> DEL_SEMICOLON | <function> ;
 
-<statement_list> ::= <statement> <statement_list> | Ã® ;
+<statement_list> ::= <statement> <statement_list> | î ;
 
 // Scope statement, selection statement, loop statement, expression statement, (declaration statement, assignment statement), function return statement, break statement
 <statement> ::= <scope_explicit> | <selection> | <loop> | <expression> DEL_SEMICOLON | <initialization> DEL_SEMICOLON | <function_return> DEL_SEMICOLON | <break> DEL_SEMICOLON ;
@@ -288,10 +288,10 @@ DEL_RCB : "}"
 <type_complete> ::= <type> #0100 <type_modifier> ;
 <type> ::= KW_VOID | KW_INT | KW_FLOAT | KW_DOUBLE | KW_BOOL | KW_CHAR | KW_STR | KW_ANY ;
 <type_modifier> ::= <type_modifier_vector> <type_modifier_const> <type_modifier_ref> <type_modifier_pointer> ;
-<type_modifier_vector> ::= KW_VECTOR #0101 <type_modifier_vector> | DEL_LSB #0102 <literal_primitive> #0103 DEL_RSB <type_modifier_vector> | Ã® ;
-<type_modifier_const> ::= KW_CONST #0104 | Ã® ;
-<type_modifier_ref> ::= OP_BW_AND #0105 | Ã® ;
-<type_modifier_pointer> ::= OP_MULT #0106 <type_modifier_pointer> | Ã® ;
+<type_modifier_vector> ::= KW_VECTOR #0101 <type_modifier_vector> | DEL_LSB #0102 <literal_primitive> #0103 DEL_RSB <type_modifier_vector> | î ;
+<type_modifier_const> ::= KW_CONST #0104 | î ;
+<type_modifier_ref> ::= OP_BW_AND #0105 | î ;
+<type_modifier_pointer> ::= OP_MULT #0106 <type_modifier_pointer> | î ;
 
 // Contant values, vector constructor
 <literal> ::= <literal_primitive> | <vector_constructor> ;
@@ -312,9 +312,9 @@ DEL_RCB : "}"
 
 <loop_for> ::= KW_FOR #0002 DEL_LP <loop_for_args> DEL_RP <statement> #0003 ;
 <loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
-<loop_for_args_init> ::= <initialization> | Ã® ;
-<loop_for_args_test> ::= <expression> | Ã® ;
-<loop_for_args_op> ::= <expression_list> | Ã® ;
+<loop_for_args_init> ::= <initialization> | î ;
+<loop_for_args_test> ::= <expression> | î ;
+<loop_for_args_op> ::= <expression_list> | î ;
 
 <loop_range_for> ::= KW_FOR #0002 DEL_LP <type_complete> ID_VAR DEL_COLON <expression> DEL_RP <statement> #0003 ;
 
@@ -331,8 +331,8 @@ DEL_RCB : "}"
 <selection_case_opt> ::= KW_PIPE <literal> DEL_ARROW <statement> ;
 <selection_case_otherwise> ::= KW_PIPE KW_OTHERWISE DEL_ARROW <statement> ;
 
-<selection_if> ::= KW_IF #0002 DEL_LP <expression> DEL_RP <scope_owned> #0003 | KW_IF #0002 DEL_LP <expression> DEL_RP <scope_owned> <selection_if_else> #0003 ;
-<selection_if_else> ::= KW_ELSE #0002 <statement> #0003 ; 
+<selection_if> ::= KW_IF #0002 #1000 DEL_LP <expression> DEL_RP #1001 <scope_owned> #0003 #1003 | KW_IF #0002 #1000 DEL_LP <expression> DEL_RP #1001 <scope_owned> <selection_if_else> #0003 #1003 ;
+<selection_if_else> ::= KW_ELSE #0002 #1002 <statement> #0003 ; 
 
 <selection_switch> ::= KW_SWITCH #0002 DEL_LP <expression> DEL_RP DEL_LCB <selection_switch_case_list> DEL_RCB #0003 ;
 <selection_switch_case_list> ::= <selection_switch_case> <selection_switch_case_list> | <selection_switch_case> | <selection_switch_otherwise> ;
@@ -344,7 +344,7 @@ DEL_RCB : "}"
 // Subroutines: function definition
 <function> ::= KW_DEF <function_name> #0300 #0002 DEL_LP <function_arg_list_guard> DEL_RP DEL_ARROW <type_complete> #0301 <scope_owned> #0003 ;
 <function_name> ::= ID_VAR | ID_FUNC | KW_FN_RESERVED ;
-<function_arg_list_guard> ::= <function_arg_list> | Ã® ;
+<function_arg_list_guard> ::= <function_arg_list> | î ;
 <function_arg_list> ::= <function_arg> DEL_COMMA <function_arg_list> | <function_arg> ;
 <function_arg> ::= <type_complete> ID_VAR #0302 ;	
 <function_return> ::= KW_RETURN <expression> #0303 ;
@@ -355,7 +355,7 @@ DEL_RCB : "}"
 
 <precedence_tree> ::= <precedence_l12> ;
 
-<precedence_l13> ::= Ã® ;
+<precedence_l13> ::= î ;
 		  
 <precedence_l12> ::= <precedence_l12> OP_OR     #0502 <precedence_l11> #0800 | <precedence_l11> ;   // ||
 <precedence_l11> ::= <precedence_l11> OP_AND    #0502 <precedence_l10> #0801 | <precedence_l10> ;   // &&
@@ -387,9 +387,9 @@ DEL_RCB : "}"
 <name_provider> ::= <name_var_provider> | <name_function_call_provider> ;
 
 <name_var_provider> ::= ID_VAR #0400 <name_var_provider_subscript> ;
-<name_var_provider_subscript> ::= DEL_LSB #0401 <expression> #0402 DEL_RSB | Ã® ;
+<name_var_provider_subscript> ::= DEL_LSB #0401 <expression> #0402 DEL_RSB | î ;
 
 <name_function_call_provider> ::= <function_name> #0403 DEL_LP <name_function_call_arg_list_guard> DEL_RP #0405 ;
-<name_function_call_arg_list_guard> ::= <name_function_call_arg_list> | Ã® ;
+<name_function_call_arg_list_guard> ::= <name_function_call_arg_list> | î ;
 <name_function_call_arg_list> ::= <name_function_call_arg> DEL_COMMA <name_function_call_arg_list> | <name_function_call_arg> ;
 <name_function_call_arg> ::= <expression> #0404 ;

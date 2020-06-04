@@ -20,6 +20,7 @@ SOURCES += \
     Model/IO/FileHandler.cpp \
     Model/Parser/Analysers/Constants.cpp \
     Model/Parser/Analysers/Lexical.cpp \
+    Model/Parser/Analysers/OperatorDefinitions.cpp \
     Model/Parser/Analysers/Semantic.cpp \
     Model/Parser/Analysers/Syntactic.cpp \
     Model/Parser/Analysers/TypeDefinitions.cpp \

@@ -120,4 +120,11 @@ enum class Vector_Constructor_Suffix {
     PUSH_VALUE = 3
 };
 
+enum class Flow_Control_Suffix {
+    ACK_IF_CONDITIONAL = 0,
+    BEGIN_TRUE_BLOCK = 1,
+    BEGIN_FALSE_BLOCK = 2,
+    ACK_IF_END = 3
+};
+
 #endif // ACTIONDEFINITIONS_HPP

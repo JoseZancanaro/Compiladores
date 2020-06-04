@@ -39,6 +39,8 @@ enum class Operator {
     LAST_OPERATOR = BITWISE
 };
 
+auto is_relational(std::string const& op) -> bool;
+
 }
 
 #endif // OPERATOR_DEFINITIONS_HPP

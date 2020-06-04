@@ -34,7 +34,11 @@ auto format_program(wpl::bip_asm::BIP_Program const& program) -> std::string {
     ss << ".text" << '\n';
 
     for (auto const& inst : program.text) {
-        ss << '\t' << inst.op << '\t' << inst.operand << std::endl;
+        if (inst.operand == ":") {
+            ss << inst.op << inst.operand << std::endl;
+        } else {
+            ss << '\t' << inst.op << '\t' << inst.operand << std::endl;
+        }
     }
 
     return ss.str();
