@@ -232,6 +232,7 @@ DEL_RCB : "}"
 <function_return>
 
 <expression_list>
+<mutate_expression>
 <expression>
 
 <precedence_tree>
@@ -306,12 +307,12 @@ DEL_RCB : "}"
 // Loops: while, do-while, for, range-for
 <loop> ::= <loop_while> | <loop_do_while> | <loop_for> | <loop_range_for> ;
 
-<loop_while> ::= KW_WHILE #0002 DEL_LP <expression> DEL_RP <statement> #0003 ;
+<loop_while> ::= KW_WHILE #0002 #1010 DEL_LP <expression> DEL_RP #1011 <statement> #0003 #1012 ;
 
-<loop_do_while> ::= KW_DO #0002 <statement> KW_WHILE DEL_LP <expression> DEL_RP #0003 ;
+<loop_do_while> ::= KW_DO #0002 #1020 <statement> KW_WHILE #1021 DEL_LP <expression> DEL_RP #0003 #1022 ;
 
-<loop_for> ::= KW_FOR #0002 DEL_LP <loop_for_args> DEL_RP <statement> #0003 ;
-<loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON <loop_for_args_test> DEL_SEMICOLON <loop_for_args_op> ;
+<loop_for> ::= KW_FOR #0002 DEL_LP <loop_for_args> DEL_RP #1032 <statement> #0003 #1033 ;
+<loop_for_args> ::= <loop_for_args_init> DEL_SEMICOLON #1030 <loop_for_args_test> DEL_SEMICOLON #1031 <loop_for_args_op> ;
 <loop_for_args_init> ::= <initialization> | î ;
 <loop_for_args_test> ::= <expression> | î ;
 <loop_for_args_op> ::= <expression_list> | î ;
@@ -350,7 +351,8 @@ DEL_RCB : "}"
 <function_return> ::= KW_RETURN <expression> #0303 ;
 
 // Expression and operator precedence tree
-<expression_list> ::= <expression> DEL_COMMA <expression_list> | <expression> ;
+<expression_list> ::= <mutate_expression> DEL_COMMA <expression_list> | <mutate_expression> ;
+<mutate_expression> ::= <assignment> | <expression> ;
 <expression> ::= <precedence_tree> ;
 
 <precedence_tree> ::= <precedence_l12> ;

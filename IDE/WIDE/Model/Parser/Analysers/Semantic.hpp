@@ -147,6 +147,10 @@ private:
         std::stack<std::string> flow_control_operators {};
         bool is_flow_control {};
         bool vector_constructed {};
+        std::stack<std::vector<bip_asm::Instruction>> redirection {};
+        bool redirected_output {};
+
+
     };
 
     // @TODO separate asm generation, array scope declaration

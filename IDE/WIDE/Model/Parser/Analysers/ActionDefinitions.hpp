@@ -121,10 +121,27 @@ enum class Vector_Constructor_Suffix {
 };
 
 enum class Flow_Control_Suffix {
+    // If
     ACK_IF_CONDITIONAL = 0,
     BEGIN_TRUE_BLOCK = 1,
     BEGIN_FALSE_BLOCK = 2,
-    ACK_IF_END = 3
+    ACK_IF_END = 3,
+
+    // While
+    ACK_WHILE_CONDITIONAL = 10,
+    BEGIN_WHILE_LOOP = 11,
+    ACK_WHILE_END = 12,
+
+    // Do While
+    ACK_DO_WHILE_CONDITIONAL = 20,
+    ACK_DO_WHILE_EXPRESSION = 21,
+    ACK_DO_WHILE_END = 22,
+
+    // For
+    ACK_FOR_CONDITIONAL = 30,
+    ACK_FOR_MUTATION = 31,
+    ACK_FOR_MUTATION_END = 32,
+    ACK_FOR_END = 33
 };
 
 #endif // ACTIONDEFINITIONS_HPP

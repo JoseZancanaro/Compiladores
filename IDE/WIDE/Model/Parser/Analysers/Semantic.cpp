@@ -265,6 +265,7 @@ auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
         case Name_Provider_Suffix::SET_NAME_VAR_ID: {
             this->name_providers.push({ token->get_lexeme() });
             this->gc.name_ids.push(token->get_lexeme());
+
             break;
         }
         case Name_Provider_Suffix::SET_SUBSCRIPT_ACCESS: {
@@ -421,8 +422,7 @@ auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* 
                         this->bip_asm_text("LDV", this->bip_asm_hash_name(name));
                     } else {
                         this->bip_asm_text("LD", this->bip_asm_hash_name(name));
-                    }
-
+                    }     
                 } else {
                     bool rel = is_relational(this->gc.operators.top());
 
@@ -753,6 +753,40 @@ auto Semantic::do_vector_constructor_action(int suffix, [[maybe_unused]] Token c
 }
 
 auto Semantic::do_flow_control_action(int suffix, [[maybe_unused]] Token const* token) -> void {
+    auto matching_relational_opposite = [](std::string const& op) -> std::string {
+        if (op == ">") {
+            return "BLE";
+        } else if (op == "<") {
+            return "BGE";
+        } else if (op == ">=") {
+            return "BLT";
+        } else if (op == "<=") {
+            return "BGT";
+        } else if (op == "==") {
+            return "BNE";
+        } else if (op == "!=") {
+            return "BEQ";
+        }
+        return "HLT";
+    };
+
+    auto matching_relational = [](std::string const& op) -> std::string {
+        if (op == ">") {
+            return "BGT";
+        } else if (op == "<") {
+            return "BLT";
+        } else if (op == ">=") {
+            return "BGE";
+        } else if (op == "<=") {
+            return "BLE";
+        } else if (op == "==") {
+            return "BEQ";
+        } else if (op == "!=") {
+            return "BNE";
+        }
+        return "HLT";
+    };
+
     switch (Flow_Control_Suffix(suffix)) {
         case Flow_Control_Suffix::ACK_IF_CONDITIONAL: {
             this->gc.is_flow_control = true;
@@ -766,19 +800,7 @@ auto Semantic::do_flow_control_action(int suffix, [[maybe_unused]] Token const* 
             auto op = this->gc.flow_control_operators.top();
             this->gc.flow_control_operators.pop();
 
-            if (op == ">") {
-                this->bip_asm_text("BLE", label);
-            } else if (op == "<") {
-                this->bip_asm_text("BGE", label);
-            } else if (op == ">=") {
-                this->bip_asm_text("BLT", label);
-            } else if (op == "<=") {
-                this->bip_asm_text("BGT", label);
-            } else if (op == "==") {
-                this->bip_asm_text("BNE", label);
-            } else if (op == "!=") {
-                this->bip_asm_text("BEQ", label);
-            }
+            this->bip_asm_text(matching_relational_opposite(op), label);
 
             this->gc.is_flow_control = false;
 
@@ -801,6 +823,112 @@ auto Semantic::do_flow_control_action(int suffix, [[maybe_unused]] Token const* 
             auto label = this->gc.labels.top();
             this->gc.labels.pop();
             this->bip_asm_text(label, ":");
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_WHILE_CONDITIONAL: {
+            auto label = this->bip_asm_create_label();
+            this->gc.labels.push(label);
+            this->bip_asm_text(label, ":");
+
+            this->gc.is_flow_control = true;
+
+            break;
+        }
+        case Flow_Control_Suffix::BEGIN_WHILE_LOOP: {
+            auto label = this->bip_asm_create_label();
+            this->gc.labels.push(label);
+
+            auto op = this->gc.flow_control_operators.top();
+            this->gc.flow_control_operators.pop();
+
+            this->bip_asm_text(matching_relational_opposite(op), label);
+
+            this->gc.is_flow_control = false;
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_WHILE_END: {
+            auto end_label = this->gc.labels.top();
+            this->gc.labels.pop();
+
+            auto begin_label = this->gc.labels.top();
+            this->gc.labels.pop();
+
+            this->bip_asm_text("JMP", begin_label);
+            this->bip_asm_text(end_label, ":");
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_DO_WHILE_CONDITIONAL: {
+            auto label = this->bip_asm_create_label();
+            this->gc.labels.push(label);
+            this->bip_asm_text(label, ":");
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_DO_WHILE_EXPRESSION: {
+            this->gc.is_flow_control = true;
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_DO_WHILE_END: {
+            auto label = this->gc.labels.top();
+            this->gc.labels.pop();
+
+            auto op = this->gc.flow_control_operators.top();
+            this->gc.flow_control_operators.pop();
+
+            this->bip_asm_text(matching_relational(op), label);
+
+            this->gc.is_flow_control = false;
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_FOR_CONDITIONAL: {
+            auto label = this->bip_asm_create_label();
+            this->gc.labels.push(label);
+            this->bip_asm_text(label, ":");
+
+            this->gc.is_flow_control = true;
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_FOR_MUTATION: {
+            auto label = this->bip_asm_create_label();
+            this->gc.labels.push(label);
+
+            auto op = this->gc.flow_control_operators.top();
+            this->gc.flow_control_operators.pop();
+
+            this->bip_asm_text(matching_relational_opposite(op), label);
+
+            this->gc.redirected_output = true;
+            this->gc.redirection.push({});
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_FOR_MUTATION_END: {
+            this->gc.redirected_output = false;
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_FOR_END: {
+            auto mutation = this->gc.redirection.top();
+            this->gc.redirection.pop();
+
+            for (auto const& [ op, operand ] : mutation) {
+                this->bip_asm_text(op, operand);
+            }
+
+            auto end_label = this->gc.labels.top();
+            this->gc.labels.pop();
+
+            auto begin_label = this->gc.labels.top();
+            this->gc.labels.pop();
+
+            this->bip_asm_text("JMP", begin_label);
+            this->bip_asm_text(end_label, ":");
 
             break;
         }
@@ -967,7 +1095,11 @@ auto Semantic::bip_asm_data(Name const& name) -> void {
 }
 
 auto Semantic::bip_asm_text(std::string const& op, std::string const& operand) -> void {
-    this->compiled.text.push_back({ op, operand });
+    if (this->gc.redirected_output) {
+        this->gc.redirection.top().push_back({ op, operand });
+    } else {
+        this->compiled.text.push_back({ op, operand });
+    }
 }
 
 auto Semantic::bip_asm_hash_name(Name const* name) -> std::string {

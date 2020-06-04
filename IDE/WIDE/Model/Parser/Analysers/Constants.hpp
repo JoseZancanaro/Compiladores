@@ -100,7 +100,7 @@ extern int SPECIAL_CASES_VALUES[2];
 
 extern const char *SCANNER_ERROR[STATES_COUNT];
 
-const int FIRST_SEMANTIC_ACTION = 160;
+const int FIRST_SEMANTIC_ACTION = 161;
 
 const int SHIFT  = 0;
 const int REDUCE = 1;
@@ -109,11 +109,11 @@ const int ACCEPT = 3;
 const int GO_TO  = 4;
 const int ERROR  = 5;
 
-extern const int PARSER_TABLE[362][1164][2];
+extern const int PARSER_TABLE[374][1195][2];
 
-extern const int PRODUCTIONS[166][2];
+extern const int PRODUCTIONS[168][2];
 
-extern const char *PARSER_ERROR[362];
+extern const char *PARSER_ERROR[374];
 
 } //namespace wpl
 
