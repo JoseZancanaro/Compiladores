@@ -198,10 +198,10 @@ Double[] vetor;
 | 01 | Tipo |
 | 02 | Declaração |
 | 03 | Função |
-| 04 | Provedor de nomes |
-| 05 | Acesso de valores |
+| 04 | Provedor de Nomes |
+| 05 | Acesso de Valores |
 | 06 | Atribuição |
-| 07 | Provedor de valores |
+| 07 | Provedor de Valores |
 | 08 | Solução de Expressão |
 | 09 | Construtor de Vetores |
-| 10 | Controle de fluxo |
+| 10 | Controle de Fluxo e Procedimentos |

@@ -32,4 +32,13 @@ auto get_type_name(std::string const& name) -> Type_Name {
     return Type_Name::UNKNOWN;
 }
 
+auto to_string(Type const& type) -> std::string {
+    std::string vector = type.array ? "[]" : "";
+    std::string constant = type.constant ? " const" : "";
+    std::string ref = type.ref ? "&" : "";
+    std::string pointer = type.pointer ? "*" : "";
+
+    return get_type_description(type.name) + vector + constant + ref + pointer;
+};
+
 }

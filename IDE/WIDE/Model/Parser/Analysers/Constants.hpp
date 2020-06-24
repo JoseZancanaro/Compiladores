@@ -3,7 +3,7 @@
 
 namespace wpl {
 
-enum Token_Id
+enum Token_Id 
 {
     EPSILON  = 0,
     DOLLAR   = 1,
@@ -109,11 +109,11 @@ const int ACCEPT = 3;
 const int GO_TO  = 4;
 const int ERROR  = 5;
 
-extern const int PARSER_TABLE[374][1195][2];
+extern const int PARSER_TABLE[377][1203][2];
 
 extern const int PRODUCTIONS[168][2];
 
-extern const char *PARSER_ERROR[374];
+extern const char *PARSER_ERROR[377];
 
 } //namespace wpl
 

@@ -39,6 +39,15 @@ struct Type {
     size_t length {};
 };
 
+constexpr auto operator==(Type const& l, Type const& r) -> bool {
+    return l.name == r.name && l.array == r.array && l.pointer == r.pointer
+            && l.ref == r.ref && l.constant == r.constant && l.length == r.length;
+}
+
+constexpr auto operator!=(Type const& l, Type const& r) -> bool {
+    return !(l == r);
+}
+
 namespace type_traits {
     constexpr auto is_primitive(Type const& type) -> bool {
         return type.array == false && type.pointer == false;
@@ -79,6 +88,7 @@ namespace type_traits {
 
 auto get_type_description(Type_Name type) -> std::string;
 auto get_type_name(std::string const& name) -> Type_Name;
+auto to_string(Type const& type) -> std::string;
 
 constexpr auto is_value_type(Type_Name const& type) -> bool {
     return type >= Type_Name::FIRST_TYPE && type <= Type_Name::LAST_TYPE;

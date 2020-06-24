@@ -4,6 +4,8 @@
 #include "OperatorDefinitions.hpp"
 
 #include <iostream>
+#include <algorithm>
+#include <numeric>
 #include <sstream>
 #include <tuple>
 
@@ -82,24 +84,17 @@ auto Semantic::execute_action(int action, Token const* token) -> void {
 }
 
 auto Semantic::do_scope_action(int suffix, [[maybe_unused]] Token const* token) -> void {
-    /*auto to_string = [](Type const& type) {
-        std::string vector = type.array ? "[]" : "";
-        std::string constant = type.constant ? " const" : "";
-        std::string ref = type.ref ? "&" : "";
-        std::string pointer = type.pointer ? "*" : "";
-
-        return get_type_description(type.name) + vector + constant + ref + pointer;
-    };*/
-
     switch (Scope_Suffix(suffix)) {
         case Scope_Suffix::PUSH_GLOBAL: {
             this->scopes.push(this->scope_count++);
+            this->bip_asm_text("JMP", this->bip_asm_hash_function_name("main"));
             break;
         }
         case Scope_Suffix::POP_GLOBAL: {
             this->verify_scope_lifetime(this->scopes.top());
             this->scopes.pop();
 
+            this->bip_asm_text_pop_back();
             this->bip_asm_text("HLT", "0");
 
             break;
@@ -252,6 +247,7 @@ auto Semantic::do_function_action(int suffix, Token const* token) -> void {
             name.param_pos = this->parameter_count++;
             name.param = true;
             name.initialized = true;
+            name.parent = { this->names.top().scope, this->names.top().id };
 
             this->try_put_name(name);
 
@@ -288,15 +284,37 @@ auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
 
             if (auto name_opt = this->try_get_name(token->get_lexeme()); name_opt.has_value()) {
                 auto name = name_opt.value();
-                auto param_count = this->fetch_function_arg_count(*name);
+                auto params = this->fetch_function_params(*name);
 
-                this->call_contexts.push({ name, param_count });
+                this->call_contexts.push({ name, params });
             }
+
+            if (this->gc.binary_second_operand.top()) {
+                this->bip_asm_text("STO", "1001");
+            }
+
+            this->gc.binary_second_operand.push(false);
 
             break;
         }
         case Name_Provider_Suffix::SET_CALL_ARG: {
-            ++(this->call_contexts.top().arg_count);
+            auto & context = this->call_contexts.top();
+
+            auto expression_node = this->expression_nodes.top();
+            this->expression_nodes.pop();
+
+            if (expression_node.type.name == Type_Name::VOID) {
+                this->issue_error(
+                    detail::to_string("Void in argument ", context.args.size() + 1, " when calling '", context.name->id, "'.")
+                ); // @TODO enhance Logger Class
+            }
+
+            if (!context.name->reserved && context.args.size() < context.params.size()) {
+                this->bip_asm_text("STO", this->bip_asm_hash_name(&context.params.at(context.args.size())));
+            }
+
+            context.args.push_back(expression_node);
+
             break;
         }
         case Name_Provider_Suffix::SET_CALL_END: {
@@ -304,13 +322,20 @@ auto Semantic::do_name_provider_action(int suffix, Token const* token) -> void {
             this->call_contexts.pop();
 
             if (!context.name->reserved) {
-                if (context.total_args != context.arg_count) {
+                if (this->mismatch_params(context.params, context.args)) {
                     this->issue_error(
-                        detail::to_string("Call to '", context.name->id, "' mismatched argument count. ",
-                                          "Expected ", context.total_args, " and saw ", context.arg_count, ".")
+                        detail::to_string("Call to '", context.name->id, "' mismatched function signature. ",
+                                          "Expected ", context.params.size(), " as ", this->format_function_signature(context.params),
+                                          " and saw ", context.args.size(), " as ", this->format_function_signature(context.args),
+                                          " .")
                     ); // @TODO Enhance Logger Class
                 }
+                else {
+                    this->bip_asm_text("CALL", this->bip_asm_hash_function_name(context.name));
+                }
             }
+
+            this->gc.binary_second_operand.pop();
 
             break;
         }
@@ -438,6 +463,10 @@ auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* 
                             } else {
                                 this->bip_asm_text(this->gc.operators.top(), "1001");
                             }
+                        } else {
+                            this->bip_asm_text("STO", "1002");
+                            this->bip_asm_text("LD", "1001");
+                            this->bip_asm_text(this->gc.operators.top(), "1002");
                         }
                     } else if (provider.subscript_access) {
                         this->bip_asm_text("STO", "$indr");
@@ -454,12 +483,12 @@ auto Semantic::do_value_access_action(int suffix, [[maybe_unused]] Token const* 
                         }
                     } else {
                         if (rel) {
-                            this->bip_asm_text("LD", name->id);
+                            this->bip_asm_text("LD", this->bip_asm_hash_name(name));
                             this->bip_asm_text("STO", "1002");
                             this->bip_asm_text("LD", "1001");
                             this->bip_asm_text("SUB", "1002");
                         } else {
-                            this->bip_asm_text(this->gc.operators.top(), name->id);
+                            this->bip_asm_text(this->gc.operators.top(), this->bip_asm_hash_name(name));
                         }
                     }
                     this->gc.binary_second_operand.top() = false;
@@ -585,6 +614,12 @@ auto Semantic::do_expression_handling_action(int suffix, [[maybe_unused]] Token 
             ); // @TODO enhance Logger class
         }
 
+        if (node.type.name == Type_Name::VOID) {
+            this->issue_error(
+                detail::to_string("Invalid operand in unary expression (", get_type_description(node.type.name), ").")
+            ); // @TODO enhance Logger class
+        }
+
         switch (Unary_Expression_Handling_Suffix(suffix)) {
             case Unary_Expression_Handling_Suffix::ARITHMETIC_ADD:
             case Unary_Expression_Handling_Suffix::ARITHMETIC_SUB: {
@@ -637,7 +672,14 @@ auto Semantic::do_expression_handling_action(int suffix, [[maybe_unused]] Token 
         if (!type_traits::is_primitive(left.type) || !type_traits::is_primitive(left.type)) {
             this->issue_error(
                 detail::to_string("Array or pointer expression is not supported.")
-            ); // @TODO Move to class scope, enhance Logger class
+            ); // @TODO enhance Logger class
+        }
+
+        if (left.type.name == Type_Name::VOID || right.type.name == Type_Name::VOID) {
+            this->issue_error(
+                detail::to_string("Invalid operand in binary expression (", get_type_description(left.type.name),
+                                    " and ", get_type_description(right.type.name), ").")
+            ); // @TODO enhance Logger class
         }
 
         switch (Binary_Expression_Handling_Suffix(suffix)) {
@@ -713,8 +755,6 @@ auto Semantic::do_expression_handling_action(int suffix, [[maybe_unused]] Token 
 }
 
 auto Semantic::do_vector_constructor_action(int suffix, [[maybe_unused]] Token const* token) -> void {
-    std::cout << "Aqui estou eu mais um dia sobre o olhar sanguinario do " << this->gc.name_ids.top() << std::endl;
-
     switch (Vector_Constructor_Suffix(suffix)) {
         case Vector_Constructor_Suffix::BEGIN_FILLED_DECL: {
             this->gc.vector_index = 0;
@@ -932,6 +972,14 @@ auto Semantic::do_flow_control_action(int suffix, [[maybe_unused]] Token const* 
 
             break;
         }
+        case Flow_Control_Suffix::ACK_PROCEDURE_DECL: {
+            this->bip_asm_text(this->bip_asm_hash_function_name(this->names.top().id), ":");
+            break;
+        }
+        case Flow_Control_Suffix::ACK_PROCEDURE_RET: {
+            this->bip_asm_text_no_adjacent("RETURN", "0");
+            break;
+        }
     }
 }
 
@@ -967,6 +1015,10 @@ auto Semantic::sanitize_type(Type const& type, bool param, bool function) -> voi
     }
     if (type.name == Type_Name::ANY && function) {
         this->issue_error(detail::to_string("Any deduced type can't be used in function return."));
+        // @Todo enhance Logger Class
+    }
+    if (type.name == Type_Name::VOID && !function) {
+        this->issue_error(detail::to_string("Declaration of Void name is not allowed."));
         // @Todo enhance Logger Class
     }
 }
@@ -1040,20 +1092,55 @@ auto Semantic::try_put_name(Name const& name) -> void {
     }
 }
 
-auto Semantic::fetch_function_arg_count(Name const& name) -> std::size_t {
-    std::size_t param_count = 0;
+auto Semantic::fetch_function_params(Name const& name) -> std::vector<Name> {
+    std::vector<Name> params {};
 
     if (name.function) {
-        auto function_scope = name.scope + 1;
-
         for (auto const& n : this->name_table) {
-            if (n.scope == function_scope && n.param) {
-                ++param_count;
+            if (n.parent.has_value() && n.parent.value().first == name.scope
+                    && n.parent.value().second == name.id) {
+                params.push_back(n);
             }
         }
     }
 
-    return param_count;
+    return params;
+}
+
+auto Semantic::mismatch_params(std::vector<Name> const& params, std::vector<Expression_Node> const& args) -> bool {
+    for (auto i = 0ull, len = std::min(params.size(), args.size()); i < len; ++i) {
+        if (params.at(i).inferred != args.at(i).type) {
+            return true;
+        }
+    }
+
+    return params.size() != args.size();
+}
+
+auto Semantic::format_function_signature(std::vector<Name> const& params) -> std::string {
+    auto head = std::string{"<"};
+    auto tail = std::string{">"};
+
+    auto body = std::accumulate(std::begin(params), std::end(params), head, [](auto acc, auto param) -> std::string {
+        return acc + to_string(param.inferred) + std::string{","};
+    });
+
+    if (params.size() > 0) { body.pop_back(); };
+
+    return body + tail;
+}
+
+auto Semantic::format_function_signature(std::vector<Expression_Node> const& args) -> std::string {
+    auto head = std::string{"<"};
+    auto tail = std::string{">"};
+
+    auto body = std::accumulate(std::begin(args), std::end(args), head, [](auto acc, auto arg) -> std::string {
+        return acc + to_string(arg.type) + std::string{","};
+    });
+
+    if (args.size() > 0) { body.pop_back(); };
+
+    return body + tail;
 }
 
 auto Semantic::get_name_table() const -> Name_Table {
@@ -1102,8 +1189,32 @@ auto Semantic::bip_asm_text(std::string const& op, std::string const& operand) -
     }
 }
 
+auto Semantic::bip_asm_text_no_adjacent(std::string const& op, std::string const& operand) -> void {
+    if (this->compiled.text.size() == 0 || this->compiled.text.back().op != op
+            || this->compiled.text.back().operand != operand) {
+        this->bip_asm_text(op, operand);
+    }
+}
+
+auto Semantic::bip_asm_text_pop_back() -> void {
+    if (this->compiled.text.size() > 0) {
+        this->compiled.text.pop_back();
+    }
+}
+
 auto Semantic::bip_asm_hash_name(Name const* name) -> std::string {
     return std::string("s") + std::to_string(name->scope) + std::string("_") + name->id;
+}
+
+auto Semantic::bip_asm_hash_function_name(std::string const& id) -> std::string {
+    return std::string("_fn_") + id;
+}
+
+auto Semantic::bip_asm_hash_function_name(Name const* name) -> std::string {
+    if (name) {
+        return this->bip_asm_hash_function_name(name->id);
+    }
+    return { "_fn_nullptr" };
 }
 
 auto Semantic::bip_asm_create_label() -> std::string {

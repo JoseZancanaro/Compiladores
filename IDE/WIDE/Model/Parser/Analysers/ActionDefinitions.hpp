@@ -141,7 +141,11 @@ enum class Flow_Control_Suffix {
     ACK_FOR_CONDITIONAL = 30,
     ACK_FOR_MUTATION = 31,
     ACK_FOR_MUTATION_END = 32,
-    ACK_FOR_END = 33
+    ACK_FOR_END = 33,
+
+    // Procedure
+    ACK_PROCEDURE_DECL = 40,
+    ACK_PROCEDURE_RET = 41
 };
 
 #endif // ACTIONDEFINITIONS_HPP

@@ -32,6 +32,9 @@ struct Name {
     std::size_t param_pos {};
     bool param {};
     bool function {};
+
+    // Parent Refs
+    std::optional<std::pair<std::size_t, std::string>> parent {};
 };
 
 using Name_Table = std::vector<Name>;
@@ -44,12 +47,6 @@ struct Name_Provider {
     size_t subscript_position {};
 };
 
-struct Call_Context {
-    Name* name = nullptr;
-    std::size_t total_args {};
-    std::size_t arg_count {};
-};
-
 struct Value_Provider {
     Type type;
 };
@@ -58,6 +55,12 @@ struct Expression_Node {
     Type type;
 
     std::variant<Name_Provider, Value_Provider, std::monostate> value {};
+};
+
+struct Call_Context {
+    Name* name {};
+    std::vector<Name> params {};
+    std::vector<Expression_Node> args {};
 };
 
 struct Issue {
@@ -124,7 +127,10 @@ private:
     auto try_get_name(std::string const& id) -> std::optional<Name*>;
     auto try_put_name(Name const& name) -> void;
 
-    auto fetch_function_arg_count(Name const& name) -> std::size_t;
+    auto fetch_function_params(Name const& name) -> std::vector<Name>;
+    auto mismatch_params(std::vector<Name> const& params, std::vector<Expression_Node> const& args) -> bool;
+    auto format_function_signature(std::vector<Name> const& params) -> std::string;
+    auto format_function_signature(std::vector<Expression_Node> const& args) -> std::string;
 
     auto verify_scope_lifetime(std::size_t scope) -> void;
     auto sanitize_type(Type const& type, bool param = false, bool function = false) -> void;
@@ -149,14 +155,16 @@ private:
         bool vector_constructed {};
         std::stack<std::vector<bip_asm::Instruction>> redirection {};
         bool redirected_output {};
-
-
     };
 
     // @TODO separate asm generation, array scope declaration
     auto bip_asm_data(Name const& name) -> void;
     auto bip_asm_text(std::string const& op, std::string const& operand) -> void;
+    auto bip_asm_text_no_adjacent(std::string const& op, std::string const& operand) -> void;
+    auto bip_asm_text_pop_back() -> void;
     auto bip_asm_hash_name(Name const* name) -> std::string;
+    auto bip_asm_hash_function_name(std::string const& id) -> std::string;
+    auto bip_asm_hash_function_name(Name const* name) -> std::string;
     auto bip_asm_create_label() -> std::string;
 
     GenerationContext gc {};
