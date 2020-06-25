@@ -41,7 +41,8 @@ enum class Declare_Suffix {
 enum class Function_Suffix {
     NAME_DISCOVER = 0,
     NAME_FUNC_PUSH = 1,
-    NAME_PARAM_PUSH = 2
+    NAME_PARAM_PUSH = 2,
+    NAME_FUNC_POP = 3
 };
 
 enum class Name_Provider_Suffix {
@@ -145,7 +146,8 @@ enum class Flow_Control_Suffix {
 
     // Procedure
     ACK_PROCEDURE_DECL = 40,
-    ACK_PROCEDURE_RET = 41
+    ACK_PROCEDURE_RET = 41,
+    ACK_PROCEDURE_END = 42
 };
 
 #endif // ACTIONDEFINITIONS_HPP

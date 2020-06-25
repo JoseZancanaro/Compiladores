@@ -343,12 +343,12 @@ DEL_RCB : "}"
 <break> ::= KW_BREAK ;
 
 // Subroutines: function definition
-<function> ::= KW_DEF <function_name> #0300 #0002 #1040 DEL_LP <function_arg_list_guard> DEL_RP DEL_ARROW <type_complete> #0301 <scope_owned> #0003 #1041;
+<function> ::= KW_DEF <function_name> #0300 #0002 #1040 DEL_LP <function_arg_list_guard> DEL_RP DEL_ARROW <type_complete> #0301 <scope_owned> #0003 #1042 #0303;
 <function_name> ::= ID_VAR | ID_FUNC | KW_FN_RESERVED ;
 <function_arg_list_guard> ::= <function_arg_list> | î ;
 <function_arg_list> ::= <function_arg> DEL_COMMA <function_arg_list> | <function_arg> ;
 <function_arg> ::= <type_complete> ID_VAR #0302 ;	
-<function_return> ::= KW_RETURN <expression> #0303 #1041 ;
+<function_return> ::= KW_RETURN <expression> #1041 ;
 
 // Expression and operator precedence tree
 <expression_list> ::= <mutate_expression> DEL_COMMA <expression_list> | <mutate_expression> ;

@@ -96,6 +96,7 @@ public:
     std::stack<Value_Provider> value_providers {};
     std::stack<Expression_Node> expression_nodes {};
     std::stack<Call_Context> call_contexts {};
+    std::optional<std::pair<Name, bool>> current_function_scope {};
 
     // Context variables
     std::size_t scope_count {};

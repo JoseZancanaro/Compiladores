@@ -45,6 +45,7 @@ Main_Window::Main_Window(QWidget *parent)
     syntaxHighlighter = new WPL_Syntax_Highlighter(codeEditor->document());
 
     codeEditor->setFont(QFont("Consolas", 11, QFont::Normal));
+    codeEditor->setTabStopDistance(4 * codeEditor->fontMetrics().horizontalAdvance(' '));
 
     ui->upperSection->addWidget(codeEditor);
     ui->upperSection->setStretchFactor(1, 1);

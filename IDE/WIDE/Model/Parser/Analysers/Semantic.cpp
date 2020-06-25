@@ -230,6 +230,7 @@ auto Semantic::do_function_action(int suffix, Token const* token) -> void {
             function_name.function = true;
 
             this->try_put_name(function_name);
+            this->current_function_scope = { function_name, false };
 
             this->parameter_count = 0;
 
@@ -250,6 +251,21 @@ auto Semantic::do_function_action(int suffix, Token const* token) -> void {
             name.parent = { this->names.top().scope, this->names.top().id };
 
             this->try_put_name(name);
+
+            break;
+        }
+        case Function_Suffix::NAME_FUNC_POP: {
+            if (this->current_function_scope.has_value()) {
+                auto const& [ name, returned ] = this->current_function_scope.value();
+
+                if (name.inferred.name != Type_Name::VOID && !returned) {
+                    this->issue_warning(
+                        detail::to_string("Function name '", name.id, "' doesn't have a return statement.")
+                    ); // @TODO Enhance Logger class
+                }
+            }
+
+            this->current_function_scope = std::nullopt;
 
             break;
         }
@@ -978,6 +994,28 @@ auto Semantic::do_flow_control_action(int suffix, [[maybe_unused]] Token const* 
         }
         case Flow_Control_Suffix::ACK_PROCEDURE_RET: {
             this->bip_asm_text_no_adjacent("RETURN", "0");
+
+            if (this->current_function_scope.has_value()) {
+                auto & [ name, returned ] = this->current_function_scope.value();
+                returned = true;
+
+                auto expression_node = this->expression_nodes.top();
+                this->expression_nodes.pop();
+
+                if (name.inferred.name == Type_Name::VOID) {
+                    this->issue_error(detail::to_string("Can't return value within a Void function (procedure) '",
+                                                        name.id, "'."));
+                }
+                else {
+                    this->sanitize_type_compatibility(&name, expression_node.type);
+                }
+            }
+
+            break;
+        }
+        case Flow_Control_Suffix::ACK_PROCEDURE_END: {
+            this->bip_asm_text_no_adjacent("RETURN", "0");
+
             break;
         }
     }
@@ -1030,12 +1068,14 @@ auto Semantic::sanitize_type_compatibility(Name const* name, Type const& type) -
         support == Type_Compatibility::NONE) {
         this->issue_error(
             detail::to_string("Can't assign ", get_type_description(type.name),
-                              " into ", get_type_description(name->inferred.name))
+                              " into ", get_type_description(name->inferred.name),
+                              " in name '", name->id, "'.")
         ); // @TODO Logger Class
     } else if (support == Type_Compatibility::NARROWING) {
         this->issue_warning(
             detail::to_string("Narrowing ", get_type_description(type.name),
-                              " into ", get_type_description(name->inferred.name))
+                              " into ", get_type_description(name->inferred.name),
+                              " in name '", name->id, "'.")
         ); // @TODO Logger Class
     }
 }
